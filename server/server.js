@@ -68,39 +68,62 @@ app.post("/api/add-user", async (req, res) => {
   res.send({ errors: result.array() });
 });
 
-app.post("/api/sign-up", async (req, res) => {
-  const result = validationResult(req);
-  if (result.isEmpty()) {
-    const eventData = req.body;
-    const userData = await userModel.exists({ email: eventData.email });
-    if (userData) {
-      return res.send({ msg: null });
+app.post(
+  "/api/sign-up",
+  [
+    // Validation rules
+    check("email").isEmail().withMessage("Please provide a valid email"),
+    check("password")
+      .isLength({ min: 4 })
+      .withMessage("Password must be at least 4 characters long"),
+    check("firstName").not().isEmpty().withMessage("First name is required"),
+    check("lastName").not().isEmpty().withMessage("Last name is required"),
+  ],
+  async (req, res) => {
+    const result = validationResult(req);
+    if (result.isEmpty()) {
+      const eventData = req.body;
+      const userData = await userModel.exists({ email: eventData.email });
+      if (userData) {
+        return res.send({ msg: null });
+      }
+      await userModel.create(eventData);
+      const accessToken = jwt.sign(eventData, process.env.SECRET_AUTH_TOKEN, {
+        expiresIn: "1h",
+      });
+      res.send({ msg: { eventData, token: accessToken } });
+      return;
     }
-    await userModel.create(eventData);
-    const accessToken = jwt.sign(eventData, process.env.SECRET_AUTH_TOKEN);
-    res.send({ msg: { eventData, token: accessToken } });
-    return;
+    res.send({ errors: result.array() });
   }
-  res.send({ errors: result.array() });
-});
+);
 
-app.post("/api/check-login", async (req, res) => {
-  const result = validationResult(req);
-  if (result.isEmpty()) {
-    const loginEmail = req.body.email;
-    const loginPassword = req.body.password;
-    const userData = await userModel.exists({ email: loginEmail });
-    if (userData) {
-      const accessToken = jwt.sign(userData, process.env.SECRET_AUTH_TOKEN);
-      console.log("Access", accessToken);
-      res.send({ msg: { userData, token: accessToken } });
-    } else {
-      res.send({ msg: null });
+app.post(
+  "/api/check-login",
+  [
+    check("email").isEmail().withMessage("Please provide a valid email"),
+    check("password").not().isEmpty().withMessage("Password is required"),
+  ],
+  async (req, res) => {
+    const result = validationResult(req);
+    if (result.isEmpty()) {
+      const loginEmail = req.body.email;
+      const loginPassword = req.body.password;
+      const userData = await userModel.exists({ email: loginEmail });
+      if (userData) {
+        const accessToken = jwt.sign(userData, process.env.SECRET_AUTH_TOKEN, {
+          expiresIn: "1h",
+        });
+        console.log("Access", accessToken);
+        res.send({ msg: { userData, token: accessToken } });
+      } else {
+        res.send({ msg: null });
+      }
+      return;
     }
-    return;
+    res.send({ errors: result.array() });
   }
-  res.send({ errors: result.array() });
-});
+);
 
 app.get("/hello-world", (req, res) => {
   console.log("Hello World");
