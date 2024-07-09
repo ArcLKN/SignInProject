@@ -1,0 +1,19 @@
+import { Link as ReactRouterLink } from 'react-router-dom'
+import { Link as ChakraLink } from '@chakra-ui/react'
+import { Button, Center, Flex, Box, Text } from "@chakra-ui/react";
+
+export default function Home() {
+    return(
+        <Center h="100vh" w="100wh">
+            <Box width={"20%"}>
+                <Flex direction={"row"} align={"center"} justify={"space-evenly"} >
+                <ChakraLink as={ReactRouterLink} to='/sign-in'><Button w="100%" colorScheme="teal" bgColor="teal.300" >Sign-in</Button></ChakraLink>
+                    <Text>
+                        or
+                    </Text>
+                    <ChakraLink as={ReactRouterLink} to='/sign-up'><Button w="100%" colorScheme="teal" bgColor="teal.300" >Sign-up</Button></ChakraLink>
+                </Flex>
+            </Box>
+        </Center>
+    )
+}
