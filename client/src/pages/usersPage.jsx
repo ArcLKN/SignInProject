@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Center, HStack, Text, Flex, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  HStack,
+  Text,
+  Flex,
+  IconButton,
+} from "@chakra-ui/react";
 import { LinkIcon } from "@chakra-ui/icons";
 import FooterPaginationControls from "../components/footerPaginationControls.jsx";
 import UsersTable from "../components/usersTable.jsx";
@@ -246,6 +254,11 @@ export default function Users() {
     getSortedList({ updatedSearchFilter: newSearch, updatedActualPage: 1 });
   }
 
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.reload();
+  }
+
   return (
     <Box p="7" maxW="100vw" height="100vh">
       <AddUserModal
@@ -255,7 +268,7 @@ export default function Users() {
       />
       <Flex direction={"column"} h="100%">
         <Box mb="5">
-          <Flex align="center">
+          <Flex align="center" justify={"space-between"}>
             <HStack spacing="24px">
               <Text fontSize="4xl" fontWeight="bold">
                 Users
@@ -264,6 +277,7 @@ export default function Users() {
                 <LinkIcon />
               </IconButton>
             </HStack>
+            <Button onClick={logout}>Logout</Button>
           </Flex>
         </Box>
         <Center maxHeight="90%">

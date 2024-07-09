@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { query, validationResult } = require("express-validator");
+const { check, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
@@ -62,7 +62,23 @@ app.post("/api/add-user", async (req, res) => {
   if (result.isEmpty()) {
     const eventData = req.body;
     console.log("Got a new user:", eventData);
-    res.json({ message: "Sent the user!" });
+    await userModel.create(eventData);
+    return;
+  }
+  res.send({ errors: result.array() });
+});
+
+app.post("/api/sign-up", async (req, res) => {
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    const eventData = req.body;
+    const userData = await userModel.exists({ email: eventData.email });
+    if (userData) {
+      return res.send({ msg: null });
+    }
+    await userModel.create(eventData);
+    const accessToken = jwt.sign(eventData, process.env.SECRET_AUTH_TOKEN);
+    res.send({ msg: { eventData, token: accessToken } });
     return;
   }
   res.send({ errors: result.array() });
