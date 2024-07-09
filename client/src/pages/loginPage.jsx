@@ -12,8 +12,6 @@ import {
   InputGroup,
   InputRightElement,
   Image,
-  Divider,
-  AbsoluteCenter,
   IconButton,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
@@ -21,6 +19,7 @@ import { useForm } from "react-hook-form";
 
 function Login() {
   const [doShowPassword, setDoShowPassword] = useState("hide");
+  const [doShowWrongCredentials, setDoShowWrongCredentials] = useState(false);
 
   const {
     register,
@@ -38,6 +37,28 @@ function Login() {
       setDoShowPassword("show");
     } else {
       setDoShowPassword("hide");
+    }
+  }
+
+  async function checkUser(event) {
+    console.log("Trying to check user");
+    const response = await window.fetch(
+      "http://localhost:3001/api/check-login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(event),
+      }
+    );
+    const json = await response.json();
+    console.log(json);
+    console.log("Finished to check user");
+    if (json.msg) {
+      window.location.href = "/users";
+    } else {
+      setDoShowWrongCredentials(true);
     }
   }
 
@@ -71,7 +92,7 @@ function Login() {
           </Text>
           <form
             onSubmit={handleSubmit((data) => {
-              console.log(data);
+              checkUser(data);
             })}
           >
             <FormLabel>Email</FormLabel>
@@ -120,6 +141,11 @@ function Login() {
               bgColor="teal.300"
               value="Login"
             />
+            {doShowWrongCredentials && (
+              <Text color="red.300">
+                Email or password is wrong, try again.
+              </Text>
+            )}
           </form>
           <Flex mt="20px" justify="center" flexDirection="row">
             <Text color="gray.700">Don't have an account?</Text>

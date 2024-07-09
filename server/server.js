@@ -35,14 +35,6 @@ const userSchema = new mongoose.Schema({
 
 const userModel = mongoose.model("users", userSchema);
 
-app.get("/api/get-users", async (req, res) => {
-  await mongoose.connect(uri, clientOptions);
-  const userData = await userModel.find();
-  console.log(userData);
-  res.send({ msg: userData });
-  await mongoose.disconnect();
-});
-
 async function run() {
   try {
     // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
@@ -53,16 +45,32 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await mongoose.disconnect();
   }
 }
 
-app.post("/api/add-user", (req, res) => {
+app.get("/api/get-users", async (req, res) => {
+  const userData = await userModel.find();
+  console.log(userData);
+  res.send({ msg: userData });
+});
+
+app.post("/api/add-user", async (req, res) => {
   const result = validationResult(req);
   if (result.isEmpty()) {
     const eventData = req.body;
     console.log("Got a new user:", eventData);
     res.json({ message: "Sent the user!" });
+    return;
+  }
+  res.send({ errors: result.array() });
+});
+
+app.post("/api/check-login", async (req, res) => {
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    const emailToBeFound = req.body.email;
+    const userData = await userModel.exists({ email: emailToBeFound });
+    res.send({ msg: userData });
     return;
   }
   res.send({ errors: result.array() });
