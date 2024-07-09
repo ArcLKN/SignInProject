@@ -1,7 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { query, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+
 const uri =
   "mongodb+srv://raphaelg0:r7S9oB9z6nndHNoB@cluster0.objvoj1.mongodb.net/backoffice?retryWrites=true&w=majority";
 const clientOptions = {
@@ -48,7 +51,7 @@ async function run() {
   }
 }
 
-app.get("/api/get-users", async (req, res) => {
+app.get("/api/get-users", authenticateToken, async (req, res) => {
   const userData = await userModel.find();
   console.log(userData);
   res.send({ msg: userData });
@@ -68,9 +71,16 @@ app.post("/api/add-user", async (req, res) => {
 app.post("/api/check-login", async (req, res) => {
   const result = validationResult(req);
   if (result.isEmpty()) {
-    const emailToBeFound = req.body.email;
-    const userData = await userModel.exists({ email: emailToBeFound });
-    res.send({ msg: userData });
+    const loginEmail = req.body.email;
+    const loginPassword = req.body.password;
+    const userData = await userModel.exists({ email: loginEmail });
+    if (userData) {
+      const accessToken = jwt.sign(userData, process.env.SECRET_AUTH_TOKEN);
+      console.log("Access", accessToken);
+      res.send({ msg: { userData, token: accessToken } });
+    } else {
+      res.send({ msg: null });
+    }
     return;
   }
   res.send({ errors: result.array() });
@@ -80,6 +90,18 @@ app.get("/hello-world", (req, res) => {
   console.log("Hello World");
   res.json({ message: "Hello World!" });
 });
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.SECRET_AUTH_TOKEN, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server is on port: ${PORT}`);
