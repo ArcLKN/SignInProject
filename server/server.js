@@ -163,15 +163,6 @@ app.listen(PORT, () => {
 
 run().catch((err) => console.log(err));
 
-mongoose
-  .connect(uri, clientOptions)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-
 // Déconnexion de MongoDB à la fermeture de l'application
 process.on("SIGINT", async () => {
   await mongoose.disconnect();

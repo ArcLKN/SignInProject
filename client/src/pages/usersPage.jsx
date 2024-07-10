@@ -80,7 +80,7 @@ export default function Users() {
   }, [navigate]);
 
   if (loading) {
-    return <div>Loadding</div>;
+    return <div>Loading...</div>;
   }
   const mockupUsersKeys = {
     //id: "Id",
