@@ -17,6 +17,13 @@ import {
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 
+// prettier-ignore
+const PATTERN = {
+  email: /^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/g,
+  name: /^[\w -]{4,100}$/i,
+  password: /^[\w \-\!\.\?]{4,100}$/,
+};
+
 function SignUp() {
   const {
     register,
@@ -123,8 +130,9 @@ function SignUp() {
                 {...register("firstName", {
                   required: "First name is required.",
                   minLength: { value: 4, message: "Min length is 4." },
+                  maxLength: { value: 100, message: "Max length is 100." },
                   pattern: {
-                    value: /^[A-Za-z0-9 -]+$/i,
+                    value: PATTERN.name,
                     message: "Should only contain alphanumerical characters.",
                   },
                 })}
@@ -136,8 +144,9 @@ function SignUp() {
                 {...register("lastName", {
                   required: "Last name is required.",
                   minLength: { value: 4, message: "Min length is 4." },
+                  maxLength: { value: 100, message: "Max length is 100." },
                   pattern: {
-                    value: /^[A-Za-z0-9 -]+$/i,
+                    value: PATTERN.name,
                     message: "Should only contain alphanumerical characters.",
                   },
                 })}
@@ -146,10 +155,12 @@ function SignUp() {
               <Text color="red.300">{errors.lastName?.message}</Text>
               <FormLabel>Email</FormLabel>
               <Input
+                // prettier-ignore
                 {...register("email", {
                   required: "Email is required.",
+                  maxLength: { value: 100, message: "Max length is 100." },
                   pattern: {
-                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+                    value: PATTERN.email,
                     message: "This is not an email.",
                   },
                 })}
@@ -163,6 +174,11 @@ function SignUp() {
                   {...register("password", {
                     required: "Password is required.",
                     minLength: { value: 4, message: "Min length is 4." },
+                    maxLength: { value: 100, message: "Max length is 100." },
+                    pattern: {
+                      value: PATTERN.password,
+                      message: "Password can contain a-zA-Z0-9 ?!.-_",
+                    },
                   })}
                   placeholder="Password"
                 />
