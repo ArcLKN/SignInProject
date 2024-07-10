@@ -167,6 +167,11 @@ export default function Users() {
   }
 
   const getApiAddUser = async (event) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
+      return;
+    }
     try {
       const response = await window.fetch(
         "http://localhost:3001/api/add-user",
@@ -174,6 +179,7 @@ export default function Users() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(event),
         }
@@ -191,10 +197,67 @@ export default function Users() {
     }
   };
 
-  function createNewUser(data) {
+  const databaseDeleteUser = async (event) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
+      return;
+    }
+    try {
+      const response = await window.fetch(
+        "http://localhost:3001/api/delete-one-user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(event),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data; // Process the response data if needed
+    } catch (error) {
+      console.error("There was an error!", error);
+      // Handle the error appropriately
+    }
+  };
+
+  async function createNewUser(data) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
+      return;
+    }
     console.log(data);
     const creationDate = new Date();
+    let randomGeneratedId = Math.random().toString(16).slice(2);
+    try {
+      const response = await window.fetch(
+        "http://localhost:3001/api/generate-random-id",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      randomGeneratedId = await response.json();
+      randomGeneratedId = randomGeneratedId["msg"];
+    } catch (error) {
+      console.error("There was an error!", error);
+      // Handle the error appropriately
+    }
     const newUser = {
+      _id: randomGeneratedId,
       createdAt: creationDate.toLocaleString(),
       email: data.email,
       firstName: data["firstName"],
@@ -222,11 +285,13 @@ export default function Users() {
     getSortedList({ updatedUsers: mockupUsers });
   }
 
-  function deleteUser(userId) {
+  function deleteUser(userId, trueId) {
+    console.log("UserId", userId);
     delete mockupUsers[userId];
     setUsers(mockupUsers);
     sessionStorage.setItem("users", JSON.stringify(mockupUsers));
     getSortedList({ updatedUsers: mockupUsers });
+    databaseDeleteUser({ id: trueId });
   }
 
   function changeUsersPerPage(event) {
@@ -258,6 +323,8 @@ export default function Users() {
     localStorage.removeItem("token");
     window.location.reload();
   }
+
+  console.log(mockupUsers);
 
   return (
     <Box p="7" maxW="100vw" height="100vh">

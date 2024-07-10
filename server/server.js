@@ -4,6 +4,7 @@ const cors = require("cors");
 const { check, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const uri =
   "mongodb+srv://raphaelg0:r7S9oB9z6nndHNoB@cluster0.objvoj1.mongodb.net/backoffice?retryWrites=true&w=majority";
@@ -57,12 +58,22 @@ app.get("/api/get-users", authenticateToken, async (req, res) => {
   res.send({ msg: userData });
 });
 
-app.post("/api/add-user", async (req, res) => {
+app.post("/api/add-user", authenticateToken, async (req, res) => {
   const result = validationResult(req);
   if (result.isEmpty()) {
     const eventData = req.body;
     console.log("Got a new user:", eventData);
     await userModel.create(eventData);
+    return;
+  }
+  res.send({ errors: result.array() });
+});
+
+app.post("/api/delete-one-user", authenticateToken, async (req, res) => {
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    const eventData = req.body;
+    await userModel.deleteOne({ _id: eventData.id });
     return;
   }
   res.send({ errors: result.array() });
@@ -128,6 +139,10 @@ app.post(
 app.get("/hello-world", (req, res) => {
   console.log("Hello World");
   res.json({ message: "Hello World!" });
+});
+
+app.post("/api/generate-random-id", async (req, res) => {
+  res.send({ msg: crypto.randomBytes(24 / 2).toString("hex") });
 });
 
 function authenticateToken(req, res, next) {
