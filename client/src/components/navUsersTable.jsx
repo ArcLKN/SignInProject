@@ -17,7 +17,6 @@ import { SearchIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { colors } from "../styleVariables.jsx";
 
 export default function NavUsersTable({
-	styleVariables,
 	showAddUserModal,
 	changeUserType,
 	sortByUserType,

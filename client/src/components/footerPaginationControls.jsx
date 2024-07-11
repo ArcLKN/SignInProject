@@ -11,7 +11,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { colors } from "../styleVariables.jsx";
 
 export default function FooterPaginationControls({
-	styleVariables,
 	actualPage,
 	userPerPage,
 	maxPages,
