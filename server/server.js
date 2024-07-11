@@ -1,3 +1,6 @@
+const config = require("./config")();
+process.env.PORT = config.port;
+
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -15,7 +18,7 @@ const clientOptions = {
 const app = express();
 app.use(cors());
 app.use(express.json());
-const PORT = 3001;
+const PORT = process.env.PORT;
 
 const userSchema = new mongoose.Schema({
   createdAt: String,
