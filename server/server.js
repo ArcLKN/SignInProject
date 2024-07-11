@@ -5,6 +5,7 @@ const { check, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 
 const uri =
   "mongodb+srv://raphaelg0:r7S9oB9z6nndHNoB@cluster0.objvoj1.mongodb.net/backoffice?retryWrites=true&w=majority";
@@ -35,6 +36,7 @@ const userSchema = new mongoose.Schema({
   userProfileSurveyPassed: Boolean,
   welcomePopupShown: Boolean,
   wizardSurveyPassed: Boolean,
+  password: String,
 });
 
 const userModel = mongoose.model("users", userSchema);
@@ -93,11 +95,13 @@ app.post(
   async (req, res) => {
     const result = validationResult(req);
     if (result.isEmpty()) {
+      console.log(req.body);
       const eventData = req.body;
       const userData = await userModel.exists({ email: eventData.email });
       if (userData) {
         return res.send({ msg: null });
       }
+      eventData.password = await bcrypt.hash(eventData.password, 10);
       await userModel.create(eventData);
       const accessToken = jwt.sign(eventData, process.env.SECRET_AUTH_TOKEN, {
         expiresIn: "1h",
@@ -117,22 +121,36 @@ app.post(
   ],
   async (req, res) => {
     const result = validationResult(req);
-    if (result.isEmpty()) {
-      const loginEmail = req.body.email;
-      const loginPassword = req.body.password;
-      const userData = await userModel.exists({ email: loginEmail });
-      if (userData) {
-        const accessToken = jwt.sign(userData, process.env.SECRET_AUTH_TOKEN, {
-          expiresIn: "1h",
-        });
-        console.log("Access", accessToken);
-        res.send({ msg: { userData, token: accessToken } });
-      } else {
-        res.send({ msg: null });
-      }
-      return;
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
     }
-    res.send({ errors: result.array() });
+    const loginEmail = req.body.email;
+    const loginPassword = req.body.password;
+    try {
+      const user = await userModel.findOne({ email: loginEmail });
+      if (!user) {
+        return res.status(400).json({ msg: "Invalid credentials" });
+      }
+      const isMatch = await bcrypt.compare(loginPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Invalid credentials" });
+      }
+      const userPayload = Buffer.from(JSON.stringify(user), "utf8").toString(
+        "hex"
+      );
+      const accessToken = jwt.sign(
+        userPayload,
+        process.env.SECRET_AUTH_TOKEN,
+        null,
+        {
+          expiresIn: "1h",
+        }
+      );
+      return res.send({ msg: "Sign-in successful", token: accessToken });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Server error" });
+    }
   }
 );
 

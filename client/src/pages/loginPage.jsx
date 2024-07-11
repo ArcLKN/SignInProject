@@ -53,10 +53,8 @@ function Login() {
       }
     );
     const json = await response.json();
-    console.log(json);
-    console.log("Finished to check user");
-    if (json.msg && json.msg.token) {
-      localStorage.setItem("token", json.msg.token);
+    if (json.msg && json.token) {
+      localStorage.setItem("token", json.token);
       window.location.href = "/users";
     } else {
       setDoShowWrongCredentials(true);
