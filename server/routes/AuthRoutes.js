@@ -7,7 +7,7 @@ const {
 	helloWorld,
 	generateRandomId,
 } = require("../controllers/authController");
-const { authenticateToken } = require("../middleware/auth");
+const { authenticateToken } = require("../middlewares/auth");
 const router = express.Router();
 
 router.post(

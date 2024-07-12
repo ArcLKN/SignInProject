@@ -16,9 +16,10 @@ app.use(express.json());
 const PORT = process.env.PORT;
 
 const userRoutes = require("./routes/UserRoutes.js");
+//const authRoutes = require("./routes/authRoutes.js");
 
 app.use("/api", userRoutes);
-app.use("/api", authRoutes);
+//app.use("/api", authRoutes);
 
 async function run() {
 	try {

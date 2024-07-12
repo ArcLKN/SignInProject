@@ -1,13 +1,18 @@
+// /server/controllers/userController.js
 const UserModel = require("../models/User");
 const { check, validationResult } = require("express-validator");
 
-exports.getUsers = async (req, res) => {
-	const userData = await UserModel.find();
-	console.log(userData);
-	res.send({ msg: userData });
-};
+async function getUsers(req, res) {
+	try {
+		const userData = await UserModel.find();
+		res.send({ msg: userData });
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		res.status(500).json({ error: "Server error" });
+	}
+}
 
-exports.addUser = async (req, res) => {
+async function addUser(req, res) {
 	const result = validationResult(req);
 	if (result.isEmpty()) {
 		const eventData = req.body;
@@ -16,14 +21,20 @@ exports.addUser = async (req, res) => {
 		return;
 	}
 	res.send({ errors: result.array() });
-};
+}
 
-exports.deleteOneUser = async (req, res) => {
-	const result = validationResult(req);
+async function deleteOneUser(req, res) {
+	const result = validationResult(req.params.id);
 	if (result.isEmpty()) {
-		const eventData = req.body;
+		const eventData = req.params.id;
 		await userModel.deleteOne({ _id: eventData.id });
 		return;
 	}
 	res.send({ errors: result.array() });
+}
+
+module.exports = {
+	getUsers,
+	addUser,
+	deleteOneUser,
 };

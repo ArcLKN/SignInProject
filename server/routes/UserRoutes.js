@@ -1,12 +1,17 @@
+// /server/routes/UserRoutes.js
 const express = require("express");
-const { authenticateToken } = require("../middleware/auth");
+const authenticateToken = require("../middlewares/auth");
 const {
 	getUsers,
 	addUser,
 	deleteOneUser,
-} = require("../controllers/userController");
+} = require("../controllers/userController.js");
 const router = express.Router();
 
-router.get("/get-users", authenticateToken, getUsers);
-router.post("/add-user", authenticateToken, addUser);
-router.post("/delete-one-user", authenticateToken, deleteOneUser);
+router.get("/users", authenticateToken, getUsers);
+//router.get("/users/:id", authenticateToken, getUser);
+//router.post("/users", authenticateToken, addUser);
+//router.put("/users/:id", authenticateToken, updateUser);
+//router.delete("/users/:id", authenticateToken, deleteOneUser);
+
+module.exports = router;

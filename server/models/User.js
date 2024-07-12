@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
 	createdAt: String,
-	email: String,
-	firstName: String,
-	lastName: String,
+	email: { type: String, required: true, unique: true },
+	firstName: { type: String, required: true },
+	lastName: { type: String, required: true },
 	userType: String,
 	projectsCollaboratorsCount: Number,
 	projectsCount: Number,
@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
 	userProfileSurveyPassed: Boolean,
 	welcomePopupShown: Boolean,
 	wizardSurveyPassed: Boolean,
-	password: String,
+	password: { type: String, required: true },
 });
 
 const UserModel = mongoose.model("users", userSchema);
