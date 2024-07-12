@@ -40,7 +40,7 @@ exports.signUp = async (req, res) => {
 			userProfileSurveyPassed: false,
 			welcomePopupShown: false,
 			wizardSurveyPassed: false,
-			validatedUser: false,
+			verifiedUser: false,
 		});
 		const accessToken = jwt.sign(
 			{ id: newUser._id, email: newUser.email },
@@ -75,6 +75,11 @@ exports.checkLogin = async (req, res) => {
 		const user = await UserModel.findOne({ email: loginEmail }).lean();
 		if (!user) {
 			return res.status(400).json({ error: "Invalid credentials" });
+		}
+		if (!user.verifiedUser) {
+			return res
+				.status(400)
+				.json({ error: "Please verify your account before sign-in." });
 		}
 		const isMatch = await bcrypt.compare(loginPassword, user.password);
 		if (!isMatch) {

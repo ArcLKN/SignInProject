@@ -5,15 +5,15 @@ function authenticateToken(req, res, next) {
 	const authHeader = req.headers["authorization"];
 	const token = authHeader && authHeader.split(" ")[1];
 	if (!token) {
-		console.log("Token absent, envoi du statut 401 Unauthorized");
+		console.log("Missing Token, Status 401 Unauthorized");
 		return res.sendStatus(401);
 	}
 	jwt.verify(token, process.env.SECRET_AUTH_TOKEN, (err, user) => {
 		if (err) {
-			console.error("Erreur de vérification du jeton:", err);
+			console.error("Could not verify token", err);
 			return res.sendStatus(403);
 		}
-		console.log("Utilisateur authentifié avec succès");
+		console.log("User verified with success");
 		req.user = user;
 		next();
 	});
