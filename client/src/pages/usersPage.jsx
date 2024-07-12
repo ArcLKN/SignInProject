@@ -234,14 +234,16 @@ export default function Users() {
 		getSortedList({ updatedUsers: mockupUsers });
 	}
 
-	function deleteUser(userId, trueId) {
-		console.log("UserId", userId);
-		delete mockupUsers[userId];
-		setUsers(mockupUsers);
-		sessionStorage.setItem("users", JSON.stringify(mockupUsers));
-		getSortedList({ updatedUsers: mockupUsers });
-		const result = databaseDeleteUser({ id: trueId });
-		if (!result) return navigate("/sign-in"); // Redirect to login page if no token
+	async function deleteUser(userDictId, userIdentifier) {
+		console.log("trueId", userIdentifier);
+		const result = await databaseDeleteUser({ id: userIdentifier });
+		console.log(result);
+		if (result) {
+			delete mockupUsers[userDictId];
+			setUsers(mockupUsers);
+			sessionStorage.setItem("users", JSON.stringify(mockupUsers));
+			getSortedList({ updatedUsers: mockupUsers });
+		}
 	}
 
 	function changeUsersPerPage(event) {

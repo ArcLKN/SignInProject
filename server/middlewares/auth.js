@@ -13,7 +13,6 @@ function authenticateToken(req, res, next) {
 			console.error("Could not verify token", err);
 			return res.sendStatus(403);
 		}
-		console.log("User verified with success");
 		req.user = user;
 		next();
 	});
