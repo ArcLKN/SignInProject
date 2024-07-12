@@ -7,11 +7,19 @@ const {
 	addUser,
 	deleteOneUser,
 } = require("../controllers/userController.js");
+const checkUserOwnership = require("../middlewares/checkUserOwnership.js");
+const checkUserType = require("../middlewares/checkUserType.js");
 const router = express.Router();
 
 router.get("/users", authenticateToken, getUsers);
 //router.get("/users/:id", authenticateToken, getUser);
-router.post("/users", authenticateToken, addUser);
+router.post(
+	"/users",
+	authenticateToken,
+	checkUserOwnership,
+	checkUserType(["Admin", "Super Admin"]),
+	addUser
+);
 //router.put("/users/:id", authenticateToken, updateUser);
 router.delete(
 	"/users/:id",
@@ -23,6 +31,8 @@ router.delete(
 			.withMessage("MongoId is required"),
 	],
 	authenticateToken,
+	checkUserOwnership,
+	checkUserType(["Admin", "Super Admin"]),
 	deleteOneUser
 );
 
