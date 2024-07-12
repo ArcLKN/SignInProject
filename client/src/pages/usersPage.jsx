@@ -16,6 +16,7 @@ import NavUsersTable from "../components/navUsersTable.jsx";
 import UsersEmptyState from "../components/usersEmptyState.jsx";
 import AddUserModal from "../components/addUserModal.jsx";
 import { colors } from "../styleVariables.jsx";
+import { getUsers } from "../api/UserRoutes.jsx";
 
 export default function Users() {
 	const [loading, setLoading] = useState(true);
@@ -34,44 +35,24 @@ export default function Users() {
 	);
 
 	useEffect(() => {
-		const checkAuth = async () => {
-			const token = localStorage.getItem("token");
-			if (!token) {
-				navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
-				return;
-			}
-
+		const fetchData = async () => {
 			try {
-				const response = await window.fetch(
-					"http://localhost:3001/api/get-users",
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-				const json = await response.json();
-				console.log(json);
-				let allUsers = {};
-				if (json) {
-					allUsers = json["msg"];
+				const allUsers = await getUsers(); // Attend la résolution de la promesse
+				if (allUsers.msg) {
+					// Vérifiez si la réponse contient un champ 'msg'
+					setUsers(allUsers.msg);
+				} else {
+					navigate("/sign-in"); // Redirige vers la page de connexion si aucune donnée valide n'est retournée
 				}
-				console.log(allUsers);
-				setUsers(allUsers);
-				setSortedUsers(
-					Object.fromEntries(Object.entries(allUsers).slice(0, 14))
-				);
-				setMaxPages(
-					Math.ceil(Object.entries(allUsers).length / userPerPage)
-				);
 			} catch (error) {
 				console.error("Error fetching data:", error);
-				navigate("/sign-in"); // Redirige vers la page de connexion en cas d'erreur
+				navigate("/sign-in"); // Gestion des erreurs : redirige vers la page de connexion en cas d'erreur
 			} finally {
 				setLoading(false); // Fin du chargement
 			}
 		};
-		checkAuth();
+
+		fetchData();
 	}, [navigate]);
 
 	if (loading) {
