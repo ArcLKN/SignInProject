@@ -4,7 +4,7 @@ const { validationResult } = require("express-validator");
 
 async function getUsers(req, res) {
 	try {
-		const userData = await UserModel.find();
+		const userData = await UserModel.find().select("-password");
 		res.status(200).json({ msg: userData, error: "Opération réussie" });
 	} catch (error) {
 		console.error("Error fetching users:", error);
