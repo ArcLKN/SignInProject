@@ -28,6 +28,34 @@ export async function getUsers() {
 	}
 }
 
+export async function databaseDeleteUser(event) {
+	const token = localStorage.getItem("token");
+	if (!token) return;
+	try {
+		const response = await window.fetch(
+			`http://localhost:3001/api/users/${event.id}`,
+			{
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(event),
+			}
+		);
+
+		if (!response.ok) {
+			throw new Error(`Error: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		return data; // Process the response data if needed
+	} catch (error) {
+		console.error("There was an error!", error);
+		// Handle the error appropriately
+	}
+}
+
 export async function checkUser(event) {
 	console.log("Trying to check user");
 	try {

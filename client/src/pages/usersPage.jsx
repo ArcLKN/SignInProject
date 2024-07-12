@@ -16,9 +16,10 @@ import NavUsersTable from "../components/navUsersTable.jsx";
 import UsersEmptyState from "../components/usersEmptyState.jsx";
 import AddUserModal from "../components/addUserModal.jsx";
 import { colors } from "../styleVariables.jsx";
-import { getUsers } from "../api/UserRoutes.jsx";
+import { getUsers, databaseDeleteUser } from "../api/UserRoutes.jsx";
 
 export default function Users() {
+	const navigate = useNavigate();
 	const [loading, setLoading] = useState(true);
 	const [selectedRows, setSelectedRows] = useState({});
 	const [selectAll, setSelectAll] = useState(false);
@@ -26,7 +27,6 @@ export default function Users() {
 	const [mockupUsers, setUsers] = useState({});
 	const [sortByUserType, setSortByUserType] = useState("");
 	const [searchFilter, setSearchFilter] = useState("");
-	const navigate = useNavigate();
 	const [sortedUsers, setSortedUsers] = useState({});
 	const [userPerPage, setUserPerPage] = useState(14);
 	const [actualPage, setActualPage] = useState(1);
@@ -155,41 +155,9 @@ export default function Users() {
 		}
 		try {
 			const response = await window.fetch(
-				"http://localhost:3001/api/add-user",
+				"http://localhost:3001/api/users",
 				{
 					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-					body: JSON.stringify(event),
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error(`Error: ${response.statusText}`);
-			}
-
-			const data = await response.json();
-			return data; // Process the response data if needed
-		} catch (error) {
-			console.error("There was an error!", error);
-			// Handle the error appropriately
-		}
-	};
-
-	const databaseDeleteUser = async (event) => {
-		const token = localStorage.getItem("token");
-		if (!token) {
-			navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
-			return;
-		}
-		console.log(event);
-		try {
-			const response = await window.fetch(
-				`http://localhost:3001/api/users/${event._id}`,
-				{
-					method: "DELETE",
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
@@ -216,7 +184,6 @@ export default function Users() {
 			navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
 			return;
 		}
-		console.log(data);
 		const creationDate = new Date();
 		let randomGeneratedId = Math.random().toString(16).slice(2);
 		try {
@@ -273,7 +240,8 @@ export default function Users() {
 		setUsers(mockupUsers);
 		sessionStorage.setItem("users", JSON.stringify(mockupUsers));
 		getSortedList({ updatedUsers: mockupUsers });
-		databaseDeleteUser({ id: trueId });
+		const result = databaseDeleteUser({ id: trueId });
+		if (!result) return navigate("/sign-in"); // Redirect to login page if no token
 	}
 
 	function changeUsersPerPage(event) {
@@ -305,8 +273,6 @@ export default function Users() {
 		localStorage.removeItem("token");
 		window.location.reload();
 	}
-
-	console.log(mockupUsers);
 
 	return (
 		<Box p='7' maxW='100vw' height='100vh'>
