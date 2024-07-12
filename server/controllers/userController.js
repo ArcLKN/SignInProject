@@ -1,6 +1,6 @@
 // /server/controllers/userController.js
 const UserModel = require("../models/User");
-const { check, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 
 async function getUsers(req, res) {
 	try {
@@ -15,12 +15,20 @@ async function getUsers(req, res) {
 async function addUser(req, res) {
 	const result = validationResult(req);
 	if (result.isEmpty()) {
-		const eventData = req.body;
-		console.log("Got a new user:", eventData);
-		await UserModel.create(eventData);
+		try {
+			const eventData = req.body;
+			console.log("Got a new user:", eventData);
+			await UserModel.create(eventData);
+			res.status(200).json({
+				msg: "Opération réussie",
+			});
+		} catch (error) {
+			console.error("Error fetching users:", error);
+			res.status(400).json({ error: "Error fetching users" });
+		}
 		return;
 	}
-	res.send({ errors: result.array() });
+	res.status(500).send({ errors: result.array() });
 }
 
 async function deleteOneUser(req, res) {
