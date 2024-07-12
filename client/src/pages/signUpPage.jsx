@@ -51,47 +51,31 @@ function SignUp() {
 	}
 
 	async function signUp(event) {
-		console.log("Trying to sign up user");
-		const creationDate = new Date();
-		const newUser = {
-			createdAt: creationDate.toLocaleString(),
-			email: event.email,
-			firstName: event.firstName,
-			lastName: event.lastName,
-			userType: "User",
-			projectsCollaboratorsCount: 0,
-			projectsCount: 0,
-			ideaProjectsCount: 0,
-			reservationsCount: 0,
-			socialPicture: "",
-			subscriptionsCount: 0,
-			signUpMethod: "Sign-Up",
-			stripeCustomedId: "",
-			unseenSystemNotificationsCount: 0,
-			updatedAt: creationDate.toLocaleString(),
-			userProfileSurveyPassed: false,
-			welcomePopupShown: false,
-			wizardSurveyPassed: false,
-			password: event.password,
-		};
-		const response = await window.fetch(
-			"http://localhost:3001/api/sign-up",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(newUser),
+		try {
+			const response = await window.fetch(
+				"http://localhost:3001/api/sign-up",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(event),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
-		);
-		const json = await response.json();
-		console.log(json);
-		console.log("Finished to check user");
-		if (json.msg && json.msg.token) {
-			localStorage.setItem("token", json.msg.token);
-			window.location.href = "/users";
-		} else {
-			setDoShowAccountExists(true);
+
+			const json = await response.json();
+			if (json.msg && json.msg.token) {
+				localStorage.setItem("token", json.msg.token);
+				window.location.href = "/sign-in";
+			} else {
+				setDoShowAccountExists(true);
+			}
+		} catch (error) {
+			console.error("Error signing up:", error);
 		}
 	}
 

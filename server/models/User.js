@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
 	welcomePopupShown: Boolean,
 	wizardSurveyPassed: Boolean,
 	password: { type: String, required: true },
+	validatedUser: Boolean,
 });
 
 const UserModel = mongoose.model("users", userSchema);
