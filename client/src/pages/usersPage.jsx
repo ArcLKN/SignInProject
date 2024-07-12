@@ -38,9 +38,10 @@ export default function Users() {
 		const fetchData = async () => {
 			try {
 				const allUsers = await getUsers(); // Attend la résolution de la promesse
-				if (allUsers.msg) {
+				if (allUsers) {
 					// Vérifiez si la réponse contient un champ 'msg'
-					setUsers(allUsers.msg);
+					setUsers(allUsers);
+					setSortedUsers(allUsers);
 				} else {
 					navigate("/sign-in"); // Redirige vers la page de connexion si aucune donnée valide n'est retournée
 				}
@@ -183,11 +184,12 @@ export default function Users() {
 			navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
 			return;
 		}
+		console.log(event);
 		try {
 			const response = await window.fetch(
-				"http://localhost:3001/api/delete-one-user",
+				`http://localhost:3001/api/users/${event._id}`,
 				{
-					method: "POST",
+					method: "DELETE",
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,

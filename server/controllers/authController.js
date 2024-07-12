@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
 const UserModel = require("../models/User");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
@@ -32,28 +32,21 @@ exports.checkLogin = async (req, res) => {
 	const loginEmail = req.body.email;
 	const loginPassword = req.body.password;
 	try {
-		const user = await UserModel.findOne({ email: loginEmail });
+		const user = await UserModel.findOne({ email: loginEmail }).lean();
 		if (!user) {
-			return res.status(400).json({ msg: "Invalid credentials" });
+			return res.status(400).json({ error: "Invalid credentials" });
 		}
 		const isMatch = await bcrypt.compare(loginPassword, user.password);
 		if (!isMatch) {
-			return res.status(400).json({ msg: "Invalid credentials" });
+			return res.status(400).json({ error: "Invalid credentials" });
 		}
-		const userPayload = Buffer.from(JSON.stringify(user), "utf8").toString(
-			"hex"
-		);
-		const accessToken = jwt.sign(
-			userPayload,
-			process.env.SECRET_AUTH_TOKEN,
-			{
-				expiresIn: "1h",
-			}
-		);
-		return res.send({ msg: "Sign-in successful", token: accessToken });
+		const accessToken = jwt.sign(user, process.env.SECRET_AUTH_TOKEN);
+		return res
+			.status(200)
+			.send({ msg: "Sign-in successful", token: accessToken });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ msg: "Server error" });
+		res.status(500).json({ error: "Server error" });
 	}
 };
 

@@ -17,10 +17,14 @@ import {
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import { colors } from "../styleVariables.jsx";
+import { checkUser } from "../api/UserRoutes.jsx";
 
 function Login() {
 	const [doShowPassword, setDoShowPassword] = useState("hide");
-	const [doShowWrongCredentials, setDoShowWrongCredentials] = useState(false);
+	const [doShowWrongCredentials, setDoShowWrongCredentials] = useState([
+		false,
+		null,
+	]);
 
 	const {
 		register,
@@ -41,25 +45,10 @@ function Login() {
 		}
 	}
 
-	async function checkUser(event) {
-		console.log("Trying to check user");
-		const response = await window.fetch(
-			"http://localhost:3001/api/check-login",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(event),
-			}
-		);
-		const json = await response.json();
-		if (json.msg && json.token) {
-			localStorage.setItem("token", json.token);
-			window.location.href = "/users";
-		} else {
-			setDoShowWrongCredentials(true);
-		}
+	async function handleLogin(data) {
+		const e = await checkUser(data);
+		console.log(e);
+		setDoShowWrongCredentials(e);
 	}
 
 	return (
@@ -93,11 +82,7 @@ function Login() {
 					<Text color={colors.mgrey} className='subTitle'>
 						Sign in to your account
 					</Text>
-					<form
-						onSubmit={handleSubmit((data) => {
-							checkUser(data);
-						})}
-					>
+					<form onSubmit={handleSubmit((data) => handleLogin(data))}>
 						<FormLabel>Email</FormLabel>
 						<Input
 							{...register("email", {
@@ -161,9 +146,15 @@ function Login() {
 							bgColor='teal.300'
 							value='Login'
 						/>
-						{doShowWrongCredentials && (
-							<Text color={colors.redError}>
-								Email or password is wrong, try again.
+						{doShowWrongCredentials[1] && (
+							<Text
+								color={
+									doShowWrongCredentials[0]
+										? colors.mainColor
+										: colors.redError
+								}
+							>
+								{doShowWrongCredentials[1]}
 							</Text>
 						)}
 					</form>

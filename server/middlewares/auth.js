@@ -8,7 +8,6 @@ function authenticateToken(req, res, next) {
 		console.log("Token absent, envoi du statut 401 Unauthorized");
 		return res.sendStatus(401);
 	}
-
 	jwt.verify(token, process.env.SECRET_AUTH_TOKEN, (err, user) => {
 		if (err) {
 			console.error("Erreur de vérification du jeton:", err);
