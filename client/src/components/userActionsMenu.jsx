@@ -29,7 +29,7 @@ async function getUserManageOptions(userId) {
 	}
 }
 
-const UserActionsMenu = ({ userId, deleteUser, _id }) => {
+const UserActionsMenu = ({ userId, deleteUser, _id, showEditUserModal }) => {
 	const [options, setOptions] = useState({});
 	console.log(userId, _id);
 
@@ -57,7 +57,7 @@ const UserActionsMenu = ({ userId, deleteUser, _id }) => {
 						if (key === "delete") {
 							deleteUser(userId, _id);
 						} else if (key === "edit") {
-							// Handle edit action
+							showEditUserModal(_id);
 						}
 					}}
 				>

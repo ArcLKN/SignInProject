@@ -26,6 +26,7 @@ export default function Users() {
 	const [selectAll, setSelectAll] = useState(false);
 	const [doShowAddUserModal, setDoShowAddUserModal] = useState(false);
 	const [doShowEditUserModal, setDoShowEditUserModal] = useState(false);
+	const [editUserId, setEditUserId] = useState(null);
 	const [mockupUsers, setUsers] = useState({});
 	const [sortByUserType, setSortByUserType] = useState("");
 	const [searchFilter, setSearchFilter] = useState("");
@@ -145,8 +146,13 @@ export default function Users() {
 		setSelectAll(true);
 	}
 
-	function showAddUserModal() {
+	function showAddUserModal(userId) {
 		setDoShowAddUserModal(true);
+	}
+
+	function showEditUserModal(userId) {
+		setDoShowEditUserModal(true);
+		setEditUserId(userId);
 	}
 
 	const getApiAddUser = async (event) => {
@@ -289,6 +295,7 @@ export default function Users() {
 				isOpen={doShowEditUserModal}
 				doOpen={setDoShowEditUserModal}
 				editUser={editUser}
+				userId={editUserId}
 			/>
 			<Flex direction={"column"} h='100%'>
 				<Box mb='5'>
@@ -328,6 +335,7 @@ export default function Users() {
 									selectAll={selectAll}
 									setSelectAll={setSelectAll}
 									deleteUser={deleteUser}
+									showEditUserModal={showEditUserModal}
 								/>
 							) : (
 								<UsersEmptyState />

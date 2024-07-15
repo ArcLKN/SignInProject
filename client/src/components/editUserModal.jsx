@@ -14,7 +14,7 @@ import {
 import { useForm } from "react-hook-form";
 import { colors } from "../styleVariables.jsx";
 
-export default function EditUserModal({ isOpen, doOpen, editUser }) {
+export default function EditUserModal({ isOpen, doOpen, editUser, userId }) {
 	const {
 		register,
 		handleSubmit,
