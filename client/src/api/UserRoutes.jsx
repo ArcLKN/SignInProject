@@ -33,7 +33,7 @@ export async function databaseDeleteUser(event) {
 	if (!token) return;
 	try {
 		const response = await window.fetch(
-			`http://localhost:3001/api/users/${event}`,
+			`http://localhost:3001/api/users/${event.id}`,
 			{
 				method: "DELETE",
 				headers: {

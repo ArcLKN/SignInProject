@@ -1,5 +1,5 @@
 function checkUserOwnership(req, res, next) {
-	const id = req.params.id || req.user.id;
+	const id = req.user._id;
 
 	if (req.userId !== id) {
 		return res.status(403).json({ error: "Access denied" });
