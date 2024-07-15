@@ -9,7 +9,6 @@ import {
 	Tbody,
 	Menu,
 	Button,
-	MenuItem,
 	Box,
 	MenuButton,
 	MenuList,
