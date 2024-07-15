@@ -7,6 +7,7 @@ const {
 	getUser,
 	addUser,
 	deleteOneUser,
+	updateUser,
 } = require("../controllers/userController.js");
 const checkUserOwnership = require("../middlewares/checkUserOwnership.js");
 const checkUserType = require("../middlewares/checkUserType.js");
@@ -23,7 +24,7 @@ router.post(
 	checkUserType(["Admin", "Super Admin"]),
 	addUser
 );
-//router.put("/users/:id", authenticateToken, updateUser);
+router.put("/users/:id", authenticateToken, updateUser);
 
 router.delete(
 	"/users/:id",

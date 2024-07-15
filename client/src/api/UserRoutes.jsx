@@ -93,7 +93,7 @@ export async function getUser(userId) {
 	if (!token) return;
 	try {
 		const response = await window.fetch(
-			`http://localhost:3001/api/user/:${userId}`,
+			`http://localhost:3001/api/user/${userId}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,

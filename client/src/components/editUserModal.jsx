@@ -13,19 +13,131 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { colors } from "../styleVariables.jsx";
+import React, { useEffect } from "react";
 
-export default function EditUserModal({ isOpen, doOpen, editUser, userId }) {
+export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 	const {
 		register,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useForm({
-		defaultValues: {
-			firstName: "",
-			lastName: "",
-			userType: "User",
-			email: "qwertzu@gmail.com",
+		defaultValues: userData,
+	});
+
+	useEffect(() => {
+		reset(userData);
+	}, [userData, reset]);
+
+	const inputConfig = {
+		createdAt: {
+			name: "Created At",
+			type: "date",
 		},
+		email: { name: "Email", type: "email", isForbidden: true },
+		firstName: { name: "First Name", type: "text", isForbidden: true },
+		lastName: { name: "Last Name", type: "text", isForbidden: true },
+		userType: {
+			name: "User Type",
+			type: "select",
+			isForbidden: true,
+			doAdmin: true,
+			options: [
+				{ label: "User", value: "User" },
+				{ label: "Admin", value: "Admin" },
+				{ label: "Super Admin", value: "Super Admin" },
+				{ label: "Moderator", value: "Moderator" },
+				{ label: "Content Moderator", value: "Content Moderator" },
+				{
+					label: "Discussions Moderator",
+					value: "Discussions Moderator",
+				},
+				{ label: "User Moderator", value: "User Moderator" },
+				{ label: "Guest", value: "Guest" },
+			],
+		},
+		projectsCollaboratorsCount: {
+			name: "Projects Collaborators.",
+			type: "number",
+		},
+		projectsCount: { name: "Projects Count", type: "number" },
+		ideaProjectsCount: { name: "Idea Projects Count", type: "number" },
+		reservationsCount: { name: "Reservations Count", type: "number" },
+		socialPicture: { name: "Social Picture", type: "number" },
+		subscriptionsCount: { name: "Subscriptions Count", type: "number" },
+		signUpMethod: { name: "Sign Up Method" },
+		stripeCustomedId: { name: "Stripe Customer ID", type: "text" },
+		unseenSystemNotificationsCount: {
+			name: "Unseen Notif.",
+			type: "number",
+		},
+		updatedAt: { name: "Updated At", type: "date" },
+		userProfileSurveyPassed: {
+			name: "User Profile Survey Passed",
+			type: "select",
+			options: [
+				{ label: "true", value: true },
+				{ label: "false", value: false },
+			],
+		},
+		welcomePopupShown: {
+			name: "Welcome Popup Shown",
+			type: "select",
+			options: [
+				{ label: "true", value: true },
+				{ label: "false", value: false },
+			],
+		},
+		wizardSurveyPassed: {
+			name: "Wizard Survey Passed",
+			type: "select",
+			options: [
+				{ label: "true", value: true },
+				{ label: "false", value: false },
+			],
+		},
+	};
+	const EditUserModalInputs = Object.keys(userData).map((key) => {
+		if (inputConfig[key]) {
+			if (inputConfig[key].isForbidden && !inputConfig[key].doAdmin) {
+				return null;
+			} else {
+				if (inputConfig[key].type == "select") {
+					return (
+						<React.Fragment key={key}>
+							<FormLabel>{inputConfig[key].name}</FormLabel>
+							<Select
+								{...register("userType", {
+									required: "User type is required.",
+								})}
+								placeholder={userData.key}
+							>
+								{inputConfig[key].options.map((option) => (
+									<option
+										key={option.value}
+										value={option.value}
+									>
+										{option.label}
+									</option>
+								))}
+							</Select>
+						</React.Fragment>
+					);
+				} else {
+					return (
+						<React.Fragment key={key}>
+							<FormLabel>{inputConfig[key].name}</FormLabel>
+							<Input
+								{...register(key)}
+								type={inputConfig[key].type}
+								placeholder={userData[key]}
+							/>
+						</React.Fragment>
+					);
+				}
+			}
+		}
+		return null;
 	});
 
 	//console.log("Errors", errors)
@@ -34,15 +146,26 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userId }) {
 		<Modal isOpen={isOpen} onClose={() => doOpen(false)}>
 			<ModalOverlay />
 			<ModalContent maxH={"100vh"}>
-				<ModalHeader>{"Edit: " + userId}</ModalHeader>
+				<ModalHeader>
+					{"Edit: " + userData.firstName + " " + userData.lastName}
+				</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody maxH='80%' overflowY='auto'>
 					<form
 						onSubmit={handleSubmit((data) => {
 							doOpen(false);
-							createNewUser(data);
+							editUser(data);
 						})}
-					></form>
+					>
+						{EditUserModalInputs}
+						<Input
+							mt='5'
+							bgColor='teal.300'
+							fontWeight={"bold"}
+							type='submit'
+							value='Edit User'
+						/>
+					</form>
 				</ModalBody>
 			</ModalContent>
 		</Modal>

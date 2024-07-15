@@ -16,7 +16,12 @@ import NavUsersTable from "../components/navUsersTable.jsx";
 import UsersEmptyState from "../components/usersEmptyState.jsx";
 import AddUserModal from "../components/addUserModal.jsx";
 import { colors } from "../styleVariables.jsx";
-import { getUsers, databaseDeleteUser, editUser } from "../api/UserRoutes.jsx";
+import {
+	getUsers,
+	databaseDeleteUser,
+	editUser,
+	getUser,
+} from "../api/UserRoutes.jsx";
 import EditUserModal from "../components/editUserModal.jsx";
 
 export default function Users() {
@@ -26,7 +31,10 @@ export default function Users() {
 	const [selectAll, setSelectAll] = useState(false);
 	const [doShowAddUserModal, setDoShowAddUserModal] = useState(false);
 	const [doShowEditUserModal, setDoShowEditUserModal] = useState(false);
-	const [editUserId, setEditUserId] = useState(null);
+	const [editUserId, setEditUserId] = useState({
+		firstName: "",
+		lastName: "",
+	});
 	const [mockupUsers, setUsers] = useState({});
 	const [sortByUserType, setSortByUserType] = useState("");
 	const [searchFilter, setSearchFilter] = useState("");
@@ -150,9 +158,21 @@ export default function Users() {
 		setDoShowAddUserModal(true);
 	}
 
-	function showEditUserModal(userId) {
+	async function showEditUserModal(userId) {
 		setDoShowEditUserModal(true);
-		setEditUserId(userId);
+		const fetchUserData = async () => {
+			try {
+				const userData = await getUser(userId); // Waiting for promise
+				if (userData) {
+					setEditUserId(userData);
+				}
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+		await fetchUserData();
 	}
 
 	const getApiAddUser = async (event) => {
@@ -295,7 +315,7 @@ export default function Users() {
 				isOpen={doShowEditUserModal}
 				doOpen={setDoShowEditUserModal}
 				editUser={editUser}
-				userId={editUserId}
+				userData={editUserId}
 			/>
 			<Flex direction={"column"} h='100%'>
 				<Box mb='5'>
