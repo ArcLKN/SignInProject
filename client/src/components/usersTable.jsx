@@ -153,7 +153,7 @@ export default function UsersTable({
 	);
 
 	return (
-		<Box h='100%' overflowY={"hidden"} minH='250px'>
+		<Box h='100%' overflowY={"hidden"} minH='300px'>
 			<TableContainer h='100%' overflowY={"auto"}>
 				<Table variant='simple' w='100%'>
 					<Thead>
