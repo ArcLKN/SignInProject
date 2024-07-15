@@ -12,6 +12,18 @@ async function getUsers(req, res) {
 	}
 }
 
+async function getUser(req, res) {
+	try {
+		const userData = await UserModel.findOne({ _id: req.params.id }).select(
+			"-password"
+		);
+		res.status(200).json({ msg: userData, error: "Success" });
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		res.status(500).json({ error: "Server error" });
+	}
+}
+
 async function addUser(req, res) {
 	const result = validationResult(req);
 	if (result.isEmpty()) {
@@ -52,6 +64,7 @@ async function deleteOneUser(req, res) {
 
 module.exports = {
 	getUsers,
+	getUser,
 	addUser,
 	deleteOneUser,
 };

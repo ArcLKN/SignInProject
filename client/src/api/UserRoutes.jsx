@@ -87,3 +87,27 @@ export async function checkUser(event) {
 }
 
 export async function editUser(user) {}
+
+export async function getUser(userId) {
+	const token = await checkAuth();
+	if (!token) return;
+	try {
+		const response = await window.fetch(
+			`http://localhost:3001/api/user/:${userId}`,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+		const json = await response.json();
+		console.log(json);
+		return json["msg"];
+	} catch (error) {
+		console.error("Error fetching data:", error);
+		return null;
+	}
+}

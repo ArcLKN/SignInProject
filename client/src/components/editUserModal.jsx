@@ -34,7 +34,7 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userId }) {
 		<Modal isOpen={isOpen} onClose={() => doOpen(false)}>
 			<ModalOverlay />
 			<ModalContent maxH={"100vh"}>
-				<ModalHeader>Edit: User</ModalHeader>
+				<ModalHeader>{"Edit: " + userId}</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody maxH='80%' overflowY='auto'>
 					<form

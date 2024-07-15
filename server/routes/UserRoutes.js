@@ -4,6 +4,7 @@ const { check } = require("express-validator");
 const authenticateToken = require("../middlewares/auth");
 const {
 	getUsers,
+	getUser,
 	addUser,
 	deleteOneUser,
 } = require("../controllers/userController.js");
@@ -12,6 +13,7 @@ const checkUserType = require("../middlewares/checkUserType.js");
 const router = express.Router();
 
 router.get("/users", authenticateToken, getUsers);
+router.get("/user/:id", authenticateToken, getUser);
 
 //router.get("/users/:id", authenticateToken, getUser);
 router.post(

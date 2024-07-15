@@ -21,7 +21,6 @@ async function getUserManageOptions(userId) {
 		}
 
 		const data = await response.json();
-		console.log(data);
 		return data.msg;
 	} catch (error) {
 		console.error("There was an error!", error);
@@ -31,8 +30,6 @@ async function getUserManageOptions(userId) {
 
 const UserActionsMenu = ({ userId, deleteUser, _id, showEditUserModal }) => {
 	const [options, setOptions] = useState({});
-	console.log(userId, _id);
-
 	useEffect(() => {
 		const fetchOptions = async () => {
 			const data = await getUserManageOptions(_id);
