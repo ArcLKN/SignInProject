@@ -85,3 +85,5 @@ export async function checkUser(event) {
 		return [false, "Fetch error"];
 	}
 }
+
+export async function editUser(user) {}

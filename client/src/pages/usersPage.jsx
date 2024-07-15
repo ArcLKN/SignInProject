@@ -16,7 +16,8 @@ import NavUsersTable from "../components/navUsersTable.jsx";
 import UsersEmptyState from "../components/usersEmptyState.jsx";
 import AddUserModal from "../components/addUserModal.jsx";
 import { colors } from "../styleVariables.jsx";
-import { getUsers, databaseDeleteUser } from "../api/UserRoutes.jsx";
+import { getUsers, databaseDeleteUser, editUser } from "../api/UserRoutes.jsx";
+import EditUserModal from "../components/editUserModal.jsx";
 
 export default function Users() {
 	const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function Users() {
 	const [selectedRows, setSelectedRows] = useState({});
 	const [selectAll, setSelectAll] = useState(false);
 	const [doShowAddUserModal, setDoShowAddUserModal] = useState(false);
+	const [doShowEditUserModal, setDoShowEditUserModal] = useState(false);
 	const [mockupUsers, setUsers] = useState({});
 	const [sortByUserType, setSortByUserType] = useState("");
 	const [searchFilter, setSearchFilter] = useState("");
@@ -282,6 +284,11 @@ export default function Users() {
 				isOpen={doShowAddUserModal}
 				doOpen={setDoShowAddUserModal}
 				createNewUser={createNewUser}
+			/>
+			<EditUserModal
+				isOpen={doShowEditUserModal}
+				doOpen={setDoShowEditUserModal}
+				editUser={editUser}
 			/>
 			<Flex direction={"column"} h='100%'>
 				<Box mb='5'>
