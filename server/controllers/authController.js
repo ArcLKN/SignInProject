@@ -71,6 +71,7 @@ exports.checkLogin = async (req, res) => {
 	}
 	const loginEmail = req.body.email;
 	const loginPassword = req.body.password;
+	console.log(loginPassword);
 	try {
 		const user = await UserModel.findOne({ email: loginEmail }).lean();
 		if (!user) {
@@ -85,6 +86,7 @@ exports.checkLogin = async (req, res) => {
 		if (!isMatch) {
 			return res.status(400).json({ error: "Invalid credentials" });
 		}
+		delete user.password;
 		const accessToken = jwt.sign(user, process.env.SECRET_AUTH_TOKEN);
 		return res
 			.status(200)

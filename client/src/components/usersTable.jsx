@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { colors } from "../styleVariables.jsx";
+import UserActionsMenu from "./userActionsMenu.jsx";
 
 export default function UsersTable({
 	mockupUsersKeys,
@@ -138,15 +139,11 @@ export default function UsersTable({
 							fontSize={"20px"}
 						>
 							<MenuGroup title='Manage user'>
-								<MenuItem
-									p='2'
-									bgColor={colors.redError}
-									onClick={() =>
-										deleteUser(userId, value._id)
-									}
-								>
-									Delete
-								</MenuItem>
+								<UserActionsMenu
+									userId={userId}
+									deleteUser={deleteUser}
+									_id={value._id}
+								/>
 							</MenuGroup>
 						</MenuList>
 					</Menu>
