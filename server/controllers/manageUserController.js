@@ -33,7 +33,6 @@ async function sendPossibleManageOptions(req, res) {
 				options = {};
 			}
 		}
-		console.log(options);
 		return res.status(200).json({ msg: options, error: "Success" });
 	} catch (error) {
 		console.error("Error fetching users:", error);

@@ -71,7 +71,6 @@ exports.checkLogin = async (req, res) => {
 	}
 	const loginEmail = req.body.email;
 	const loginPassword = req.body.password;
-	console.log(loginPassword);
 	try {
 		const user = await UserModel.findOne({ email: loginEmail }).lean();
 		if (!user) {
