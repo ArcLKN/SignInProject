@@ -12,11 +12,11 @@ async function getConfirmation(req, res) {
 
 		user.verifiedUser = true;
 		await user.save();
-
 		res.send("Account confirmed successfully.");
+		return true;
 	} catch (error) {
 		console.log(error);
-		res.status(400).send("Error confirming account.");
+		return res.status(400).send("Error confirming account.");
 	}
 }
 
