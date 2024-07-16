@@ -28,32 +28,37 @@ async function sendConfirmationMail(userData, res) {
 	try {
 		let info = await transporter.sendMail(mailData);
 		console.log("Success sending email");
-		return res.status(201).json({
-			msg: "Email sent",
-			info: info.messageId,
-			preview: nodemailer.getTestMessageUrl(info),
-		});
+		return {
+			success: true,
+			messageId: info.messageId,
+			previewUrl: nodemailer.getTestMessageUrl(info),
+		};
 	} catch (err) {
 		console.error(err);
-		return res.status(500).json({ msg: err.message });
+		return {
+			success: false,
+			error: err.message,
+		};
 	}
 }
 
 exports.signUp = async (req, res) => {
 	const result = validationResult(req);
 	if (!result.isEmpty()) {
-		res.send({ errors: result.array() });
+		return res.send({ errors: result.array() });
 	}
 	try {
 		const eventData = req.body;
 		const existingUser = await UserModel.findOne({
 			email: eventData.email,
 		});
+
 		if (existingUser) {
 			return res.status(400).json({ error: "Email already exists" });
 		}
+
 		const hashedPassword = await bcrypt.hash(eventData.password, 10);
-		const creationDate = new Date();
+		const creationDate = new Date().toISOString();
 		const newUser = await UserModel.create({
 			firstName: eventData.firstName,
 			lastName: eventData.lastName,
@@ -76,13 +81,21 @@ exports.signUp = async (req, res) => {
 			wizardSurveyPassed: false,
 			verifiedUser: false,
 		});
-		await sendConfirmationMail({
+		const emailResult = await sendConfirmationMail({
 			firstName: newUser.firstName,
 			lastName: newUser.lastName,
 			email: newUser.email,
 			id: newUser._id,
 			isVerificationEmail: true,
 		});
+
+		if (!emailResult.success) {
+			await UserModel.findByIdAndDelete(newUser._id);
+			return res.status(500).json({
+				error: "Error when sending confirmation mail",
+				details: emailResult.error,
+			});
+		}
 		const accessToken = jwt.sign(
 			{ id: newUser._id, email: newUser.email },
 			process.env.SECRET_AUTH_TOKEN,
@@ -101,7 +114,10 @@ exports.signUp = async (req, res) => {
 			},
 		});
 		return;
-	} catch (error) {}
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Server error" });
+	}
 };
 
 exports.checkLogin = async (req, res) => {
