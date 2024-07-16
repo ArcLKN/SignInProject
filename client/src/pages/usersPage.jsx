@@ -257,7 +257,7 @@ export default function Users() {
 			userProfileSurveyPassed: false,
 			welcomePopupShown: false,
 			wizardSurveyPassed: false,
-			password: toString(Math.random().toString(16).slice(2)),
+			password: Math.random().toString(16).slice(2),
 		};
 		getApiAddUser(newUser);
 		mockupUsers["id" + Math.random().toString(16).slice(2)] = newUser;
