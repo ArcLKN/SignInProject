@@ -21,6 +21,7 @@ import {
 	databaseDeleteUser,
 	editUser,
 	getUser,
+	databaseUpdateUser,
 } from "../api/UserRoutes.jsx";
 import EditUserModal from "../components/editUserModal.jsx";
 
@@ -271,6 +272,18 @@ export default function Users() {
 			setUsers(mockupUsers);
 			sessionStorage.setItem("users", JSON.stringify(mockupUsers));
 			getSortedList({ updatedUsers: mockupUsers });
+		}
+	}
+
+	async function editUser(newUserData) {
+		console.log("Data New!", newUserData);
+		const result = await databaseUpdateUser(newUserData);
+		console.log(result);
+		if (result) {
+			//mockupUsers[userDictId];
+			//setUsers(mockupUsers);
+			//sessionStorage.setItem("users", JSON.stringify(mockupUsers));
+			//getSortedList({ updatedUsers: mockupUsers });
 		}
 	}
 

@@ -111,3 +111,32 @@ export async function getUser(userId) {
 		return null;
 	}
 }
+
+export async function databaseUpdateUser(newUserData) {
+	console.log(newUserData);
+	const token = localStorage.getItem("token");
+	if (!token) return;
+	try {
+		const response = await window.fetch(
+			`http://localhost:3001/api/users/${newUserData._id}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(newUserData),
+			}
+		);
+
+		if (!response.ok) {
+			throw new Error(`Error: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		return data; // Process the response data if needed
+	} catch (error) {
+		console.error("There was an error!", error);
+		// Handle the error appropriately
+	}
+}

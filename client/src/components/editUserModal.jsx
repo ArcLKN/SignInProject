@@ -107,8 +107,8 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 						<React.Fragment key={key}>
 							<FormLabel>{inputConfig[key].name}</FormLabel>
 							<Select
-								{...register("userType", {
-									required: "User type is required.",
+								{...register(key, {
+									required: `${key} is required.`,
 								})}
 								placeholder={userData.key}
 							>

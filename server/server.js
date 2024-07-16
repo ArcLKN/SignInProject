@@ -4,6 +4,8 @@ process.env.PORT = config.port;
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
 const uri =
 	"mongodb+srv://raphaelg0:r7S9oB9z6nndHNoB@cluster0.objvoj1.mongodb.net/backoffice?retryWrites=true&w=majority";
@@ -13,6 +15,8 @@ const clientOptions = {
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = process.env.PORT;
 
 const userRoutes = require("./routes/UserRoutes.js");
