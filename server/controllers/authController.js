@@ -6,18 +6,9 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
 async function sendConfirmationMail(userData, res) {
-	console.log(userData);
-	let emailToken;
-	try {
-		emailToken = jwt.sign(userData, process.env.SECRET_MAIL_TOKEN, {
-			expiresIn: "1h",
-		});
-		console.log(emailToken);
-	} catch (error) {
-		console.error(error);
-		return res.status(500).json({ msg: "Error generating token" });
-	}
-
+	const emailToken = jwt.sign(userData, process.env.SECRET_MAIL_TOKEN, {
+		expiresIn: "1h",
+	});
 	let config = {
 		service: "gmail",
 		auth: {
@@ -31,7 +22,7 @@ async function sendConfirmationMail(userData, res) {
 		from: "kalidolkn@gmail.com",
 		to: userData.email,
 		subject: "Welcome to Prelaunch Backoffice!",
-		html: `Please validate your account by clicking on this link: <a href="http://localhost:5173/api/email/${emailToken}">Confirm Account</a>`,
+		html: `Please validate your account by clicking on this link: <a href="http://localhost:3001/api/email/${emailToken}">Confirm Account</a>`,
 	};
 
 	try {
@@ -89,6 +80,7 @@ exports.signUp = async (req, res) => {
 			firstName: newUser.firstName,
 			lastName: newUser.lastName,
 			email: newUser.email,
+			id: newUser._id,
 			isVerificationEmail: true,
 		});
 		const accessToken = jwt.sign(

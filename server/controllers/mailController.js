@@ -1,18 +1,21 @@
+const jwt = require("jsonwebtoken");
+const UserModel = require("../models/User");
+
 async function getConfirmation(req, res) {
 	try {
-		const { token } = req.params;
-		const decoded = jwt.verify(token, process.env.SECRET_MAIL_TOKEN); // Remplacez 'your_secret_key' par votre clé secrète
-
-		const user = await User.findOne({ _id: decoded.userId });
+		const token = req.params.token;
+		const decoded = jwt.verify(token, process.env.SECRET_MAIL_TOKEN);
+		const user = await UserModel.findOne({ _id: decoded.id });
 		if (!user) {
 			return res.status(400).send("Invalid token.");
 		}
 
-		user.isVerified = true;
+		user.verifiedUser = true;
 		await user.save();
 
 		res.send("Account confirmed successfully.");
 	} catch (error) {
+		console.log(error);
 		res.status(400).send("Error confirming account.");
 	}
 }
