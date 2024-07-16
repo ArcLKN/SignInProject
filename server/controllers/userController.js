@@ -29,7 +29,8 @@ async function addUser(req, res) {
 	if (result.isEmpty()) {
 		try {
 			const id = req.user._id;
-			const eventData = req.body;
+			let eventData = req.body;
+			eventData["verifiedUser"] = true;
 			console.log("Got a new user:", eventData);
 			await UserModel.create(eventData);
 			res.status(200).json({
