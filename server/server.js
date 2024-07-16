@@ -22,10 +22,12 @@ const PORT = process.env.PORT;
 const userRoutes = require("./routes/UserRoutes.js");
 const authRoutes = require("./routes/AuthRoutes.js");
 const manageUsersRoutes = require("./routes/ManageUserRoutes.js");
+const emailRoutes = require("./routes/MailRoutes.js");
 
 app.use("/api", userRoutes);
 app.use("/api", authRoutes);
 app.use("/api", manageUsersRoutes);
+app.use("/api", emailRoutes);
 
 async function run() {
 	try {

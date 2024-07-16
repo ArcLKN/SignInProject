@@ -51,6 +51,7 @@ function SignUp() {
 	}
 
 	async function signUp(event) {
+		console.log(event);
 		try {
 			const response = await window.fetch(
 				"http://localhost:3001/api/sign-up",

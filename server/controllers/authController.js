@@ -2,7 +2,51 @@ const { validationResult } = require("express-validator");
 const UserModel = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+
+async function sendConfirmationMail(userData, res) {
+	console.log(userData);
+	let emailToken;
+	try {
+		emailToken = jwt.sign(userData, process.env.SECRET_MAIL_TOKEN, {
+			expiresIn: "1h",
+		});
+		console.log(emailToken);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ msg: "Error generating token" });
+	}
+
+	let config = {
+		service: "gmail",
+		auth: {
+			user: process.env.NODEJS_GMAIL_APP_USER,
+			pass: process.env.NODEJS_GMAIL_APP_PASSWORD,
+		},
+	};
+	let transporter = nodemailer.createTransport(config);
+	console.log("token", emailToken);
+	let mailData = {
+		from: "kalidolkn@gmail.com",
+		to: userData.email,
+		subject: "Welcome to Prelaunch Backoffice!",
+		html: `Please validate your account by clicking on this link: <a href="http://localhost:5173/api/email/${emailToken}">Confirm Account</a>`,
+	};
+
+	try {
+		let info = await transporter.sendMail(mailData);
+		console.log("Success sending email");
+		return res.status(201).json({
+			msg: "Email sent",
+			info: info.messageId,
+			preview: nodemailer.getTestMessageUrl(info),
+		});
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ msg: err.message });
+	}
+}
 
 exports.signUp = async (req, res) => {
 	const result = validationResult(req);
@@ -11,7 +55,6 @@ exports.signUp = async (req, res) => {
 	}
 	try {
 		const eventData = req.body;
-		// Vérifier si l'utilisateur existe déjà
 		const existingUser = await UserModel.findOne({
 			email: eventData.email,
 		});
@@ -42,6 +85,12 @@ exports.signUp = async (req, res) => {
 			wizardSurveyPassed: false,
 			verifiedUser: false,
 		});
+		await sendConfirmationMail({
+			firstName: newUser.firstName,
+			lastName: newUser.lastName,
+			email: newUser.email,
+			isVerificationEmail: true,
+		});
 		const accessToken = jwt.sign(
 			{ id: newUser._id, email: newUser.email },
 			process.env.SECRET_AUTH_TOKEN,
@@ -55,7 +104,6 @@ exports.signUp = async (req, res) => {
 					firstName: newUser.firstName,
 					lastName: newUser.lastName,
 					email: newUser.email,
-					// Ajouter d'autres champs si nécessaire
 				},
 				token: accessToken,
 			},

@@ -1,30 +1,22 @@
-exports.sendConfirmationMail = async (req, res) => {
-	let config = {
-		service: "gmail", // your email domain
-		auth: {
-			user: process.env.NODEJS_GMAIL_APP_USER, // your email address
-			pass: process.env.NODEJS_GMAIL_APP_PASSWORD, // your password
-		},
-	};
-	let transporter = nodemailer.createTransport(config);
+async function getConfirmation(req, res) {
+	try {
+		const { token } = req.params;
+		const decoded = jwt.verify(token, process.env.SECRET_MAIL_TOKEN); // Remplacez 'your_secret_key' par votre clé secrète
 
-	let mailData = {
-		from: "kalidolkn@gmail.com", // sender address
-		to: "raphaelgreiner0@gmail.com", // list of receivers
-		subject: "Welcome to ABC Website!", // Subject line
-		html: "<b>Hello world?</b>", // html body
-	};
+		const user = await User.findOne({ _id: decoded.userId });
+		if (!user) {
+			return res.status(400).send("Invalid token.");
+		}
 
-	transporter
-		.sendMail(mailData)
-		.then((info) => {
-			return res.status(201).json({
-				msg: "Email sent",
-				info: info.messageId,
-				preview: nodemailer.getTestMessageUrl(info),
-			});
-		})
-		.catch((err) => {
-			return res.status(500).json({ msg: err });
-		});
+		user.isVerified = true;
+		await user.save();
+
+		res.send("Account confirmed successfully.");
+	} catch (error) {
+		res.status(400).send("Error confirming account.");
+	}
+}
+
+module.exports = {
+	getConfirmation,
 };
