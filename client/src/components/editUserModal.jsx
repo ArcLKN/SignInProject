@@ -159,8 +159,9 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 					>
 						{EditUserModalInputs}
 						<Input
+							colorScheme={colors.mainColor}
 							mt='5'
-							bgColor='teal.300'
+							//bgColor={colors.mainColor}
 							fontWeight={"bold"}
 							type='submit'
 							value='Edit User'
