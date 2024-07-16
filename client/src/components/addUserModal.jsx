@@ -53,7 +53,7 @@ export default function AddUserModal({ isOpen, doOpen, createNewUser }) {
 										message: "Min length is 4.",
 									},
 									pattern: {
-										value: /^[A-Za-z0-9]+$/i,
+										value: /^[A-Za-z0-9 -]+$/i,
 										message:
 											"Should only contain alphanumerical characters.",
 									},
@@ -68,7 +68,7 @@ export default function AddUserModal({ isOpen, doOpen, createNewUser }) {
 								{...register("lastName", {
 									required: "Last name is required.",
 									pattern: {
-										value: /^[A-Za-z0-9]+$/i,
+										value: /^[A-Za-z0-9 -]+$/i,
 										message:
 											"Should only contain alphanumerical characters.",
 									},
