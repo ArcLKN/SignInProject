@@ -54,6 +54,9 @@ export default function Users() {
 					// Vérifiez si la réponse contient un champ 'msg'
 					setUsers(allUsers);
 					setSortedUsers(allUsers);
+					setMaxPages(
+						Math.ceil(Object.entries(allUsers).length / userPerPage)
+					);
 				} else {
 					navigate("/sign-in"); // Redirige vers la page de connexion si aucune donnée valide n'est retournée
 				}
@@ -278,12 +281,23 @@ export default function Users() {
 	async function editUser(newUserData) {
 		console.log("Data New!", newUserData);
 		const result = await databaseUpdateUser(newUserData);
-		console.log(result);
+		console.log("Resuults", result);
 		if (result) {
-			//mockupUsers[userDictId];
-			//setUsers(mockupUsers);
-			//sessionStorage.setItem("users", JSON.stringify(mockupUsers));
-			//getSortedList({ updatedUsers: mockupUsers });
+			const userIndex = mockupUsers.findIndex(
+				(user) => user._id === result.userId
+			);
+			console.log(userIndex);
+			if (userIndex !== -1) {
+				console.log("WADS");
+				mockupUsers[userIndex] = {
+					...mockupUsers[userIndex],
+					...result.msg,
+				};
+				return setUsers(mockupUsers);
+			} else {
+				return null; // Ou une autre valeur pour indiquer que l'utilisateur n'a pas été trouvé
+			}
+			//
 		}
 	}
 
