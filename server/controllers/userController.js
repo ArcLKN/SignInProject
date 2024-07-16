@@ -99,6 +99,7 @@ async function updateUser(req, res) {
 			console.log("Successfully updated user:", userId);
 			return res.status(200).json({
 				msg: eventData,
+				userId: userId,
 				error: "Success",
 			});
 		} else {
