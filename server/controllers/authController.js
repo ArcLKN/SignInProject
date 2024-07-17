@@ -169,14 +169,21 @@ async function isUserAdmin(req, res) {
 	try {
 		const token = req.params.token;
 		const decoded = jwt.verify(token, process.env.SECRET_AUTH_TOKEN);
+
 		const user = await UserModel.findOne({ _id: decoded._id });
+
+		if (!user) {
+			return res.status(404).json({ msg: false });
+		}
+
 		if (["Admin", "Super Admin"].includes(user.userType)) {
 			return res.status(200).json({ msg: true });
 		}
-		return res.status(300).json({ msg: false });
+
+		return res.status(403).json({ msg: false });
 	} catch (error) {
 		console.error("Error fetching users:", error);
-		return res.status(400).json({ msg: false });
+		return res.status(500).json({ msg: false });
 	}
 }
 
