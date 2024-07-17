@@ -42,7 +42,7 @@ async function sendConfirmationMail(userData, res) {
 	}
 }
 
-exports.signUp = async (req, res) => {
+async function signUp(req, res) {
 	const result = validationResult(req);
 	if (!result.isEmpty()) {
 		return res.send({ errors: result.array() });
@@ -118,9 +118,9 @@ exports.signUp = async (req, res) => {
 		console.error(error);
 		res.status(500).json({ error: "Server error" });
 	}
-};
+}
 
-exports.checkLogin = async (req, res) => {
+async function checkLogin(req, res) {
 	const result = validationResult(req);
 	if (!result.isEmpty()) {
 		return res.status(400).json({ errors: result.array() });
@@ -150,13 +150,40 @@ exports.checkLogin = async (req, res) => {
 		console.error(error);
 		res.status(500).json({ error: "Server error" });
 	}
-};
+}
 
-exports.helloWorld = (req, res) => {
+function helloWorld(req, res) {
 	console.log("Hello World");
 	res.json({ message: "Hello World!" });
-};
+}
 
-exports.generateRandomId = (req, res) => {
+function generateRandomId(req, res) {
 	res.json({ msg: crypto.randomBytes(24 / 2).toString("hex") });
+}
+
+async function isUserAdmin(req, res) {
+	const result = validationResult(req.params.token);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ msg: false });
+	}
+	try {
+		const token = req.params.token;
+		const decoded = jwt.verify(token, process.env.SECRET_AUTH_TOKEN);
+		const user = await UserModel.findOne({ _id: decoded._id });
+		if (["Admin", "Super Admin"].includes(user.userType)) {
+			return res.status(200).json({ msg: true });
+		}
+		return res.status(300).json({ msg: false });
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		return res.status(400).json({ msg: false });
+	}
+}
+
+module.exports = {
+	isUserAdmin,
+	generateRandomId,
+	helloWorld,
+	signUp,
+	checkLogin,
 };

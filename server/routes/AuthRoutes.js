@@ -6,8 +6,9 @@ const {
 	checkLogin,
 	helloWorld,
 	generateRandomId,
-} = require("../controllers/authController");
-const { authenticateToken } = require("../middlewares/auth");
+	isUserAdmin,
+} = require("../controllers/authController.js");
+const authenticateToken = require("../middlewares/auth");
 const router = express.Router();
 
 router.post(
@@ -38,5 +39,7 @@ router.post(
 router.get("/hello-world", helloWorld);
 
 router.post("/generate-random-id", generateRandomId);
+
+router.get("/isAdmin/:token", authenticateToken, isUserAdmin);
 
 module.exports = router;
