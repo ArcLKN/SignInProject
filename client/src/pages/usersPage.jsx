@@ -49,22 +49,21 @@ export default function Users() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const allUsers = await getUsers(); // Attend la résolution de la promesse
+				const allUsers = await getUsers();
 				if (allUsers) {
-					// Vérifiez si la réponse contient un champ 'msg'
 					setUsers(allUsers);
 					setSortedUsers(allUsers);
 					setMaxPages(
 						Math.ceil(Object.entries(allUsers).length / userPerPage)
 					);
 				} else {
-					navigate("/sign-in"); // Redirige vers la page de connexion si aucune donnée valide n'est retournée
+					navigate("/sign-in");
 				}
 			} catch (error) {
 				console.error("Error fetching data:", error);
-				navigate("/sign-in"); // Gestion des erreurs : redirige vers la page de connexion en cas d'erreur
+				navigate("/sign-in");
 			} finally {
-				setLoading(false); // Fin du chargement
+				setLoading(false);
 			}
 		};
 
@@ -109,7 +108,6 @@ export default function Users() {
 		updatedUsersPerPage = userPerPage,
 		updatedSearchFilter = searchFilter,
 	}) {
-		//console.log("1", updatedUsers)
 		let newSortedUsers = updatedUsers;
 		if (updatedUserTypeSort !== "") {
 			newSortedUsers = Object.fromEntries(
@@ -118,7 +116,6 @@ export default function Users() {
 				)
 			);
 		}
-		//console.log("3", newSortedUsers)
 		//console.log("Search filter:", updatedSearchFilter)
 		newSortedUsers = Object.fromEntries(
 			Object.entries(newSortedUsers).filter(
@@ -130,7 +127,6 @@ export default function Users() {
 					value.lastName.toLowerCase().includes(updatedSearchFilter)
 			)
 		);
-		//console.log("4", newSortedUsers)
 		if (updatedUsersPerPage == Infinity) {
 			setMaxPages(1);
 		} else {
@@ -146,7 +142,6 @@ export default function Users() {
 				updatedUsersPerPage * updatedActualPage
 			)
 		);
-		//console.log("2", newSortedUsers)
 		setSortedUsers(newSortedUsers);
 		setActualPage(updatedActualPage);
 		for (let userKey in newSortedUsers) {
@@ -213,7 +208,7 @@ export default function Users() {
 	async function createNewUser(data) {
 		const token = localStorage.getItem("token");
 		if (!token) {
-			navigate("/sign-in"); // Redirige vers la page de connexion s'il n'y a pas de token
+			navigate("/sign-in");
 			return;
 		}
 		const creationDate = new Date();
@@ -279,7 +274,7 @@ export default function Users() {
 	async function editUser(newUserData) {
 		console.log("Data New!", newUserData);
 		const result = await databaseUpdateUser(newUserData);
-		console.log("Resuults", result);
+		console.log("Results", result);
 		if (result) {
 			const userIndex = mockupUsers.findIndex(
 				(user) => user._id === result.userId
@@ -294,7 +289,7 @@ export default function Users() {
 				setUsers(mockupUsers);
 				return getSortedList({ updatedUsers: mockupUsers });
 			} else {
-				return null; // Ou une autre valeur pour indiquer que l'utilisateur n'a pas été trouvé
+				return null;
 			}
 			//
 		}
