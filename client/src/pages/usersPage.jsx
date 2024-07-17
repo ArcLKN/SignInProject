@@ -262,7 +262,6 @@ export default function Users() {
 		getApiAddUser(newUser);
 		mockupUsers["id" + Math.random().toString(16).slice(2)] = newUser;
 		setUsers(mockupUsers);
-		sessionStorage.setItem("users", JSON.stringify(mockupUsers));
 		getSortedList({ updatedUsers: mockupUsers });
 	}
 
@@ -273,7 +272,6 @@ export default function Users() {
 		if (result) {
 			delete mockupUsers[userDictId];
 			setUsers(mockupUsers);
-			sessionStorage.setItem("users", JSON.stringify(mockupUsers));
 			getSortedList({ updatedUsers: mockupUsers });
 		}
 	}
@@ -293,7 +291,8 @@ export default function Users() {
 					...mockupUsers[userIndex],
 					...result.msg,
 				};
-				return setUsers(mockupUsers);
+				setUsers(mockupUsers);
+				return getSortedList({ updatedUsers: mockupUsers });
 			} else {
 				return null; // Ou une autre valeur pour indiquer que l'utilisateur n'a pas été trouvé
 			}
