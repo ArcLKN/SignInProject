@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { colors } from "../styleVariables.jsx";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 	const {
@@ -24,6 +24,34 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 	} = useForm({
 		defaultValues: userData,
 	});
+	const [isAdmin, setIsAdmin] = useState(false);
+
+	const checkAdmin = async () => {
+		try {
+			const response = await window.fetch(
+				`http://localhost:3001/api/isAdmin/${localStorage.getItem(
+					"token"
+				)}`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem(
+							"token"
+						)}`,
+					},
+				}
+			);
+			if (!response.ok) {
+				throw new Error(`Error: ${response.statusText}`);
+			}
+			const json = await response.json();
+			if (json.msg) {
+				setIsAdmin(true);
+			}
+		} catch (error) {
+			console.error("There was an error!", error);
+		}
+	};
 
 	useEffect(() => {
 		reset(userData);
@@ -97,8 +125,17 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 			],
 		},
 	};
+
+	let isDisabled = false;
+
 	const EditUserModalInputs = Object.keys(userData).map((key) => {
 		if (inputConfig[key]) {
+			if (inputConfig[key].doAdmin && !isAdmin) {
+				console.log(key, "should be disabled");
+				isDisabled = true;
+			} else {
+				isDisabled = false;
+			}
 			if (inputConfig[key].isForbidden && !inputConfig[key].doAdmin) {
 				return null;
 			} else {
@@ -111,6 +148,7 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 									required: `${key} is required.`,
 								})}
 								placeholder={userData.key}
+								isDisabled={isDisabled}
 							>
 								{inputConfig[key].options.map((option) => (
 									<option
@@ -131,6 +169,7 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 								{...register(key)}
 								type={inputConfig[key].type}
 								placeholder={userData[key]}
+								isDisabled={isDisabled}
 							/>
 						</React.Fragment>
 					);
