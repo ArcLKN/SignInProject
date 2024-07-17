@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { SearchIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { colors } from "../styleVariables.jsx";
+import AddUserButton from "./addUserButton.jsx";
 
 export default function NavUsersTable({
 	showAddUserModal,
@@ -79,18 +80,7 @@ export default function NavUsersTable({
 						</HStack>
 					</Flex>
 				</Box>
-				<Box>
-					<Flex direction='row'>
-						<HStack spacing='3'>
-							<Button
-								colorScheme={colors.mainColor}
-								onClick={showAddUserModal}
-							>
-								Add new user
-							</Button>
-						</HStack>
-					</Flex>
-				</Box>
+				<AddUserButton showAddUserModal={showAddUserModal} />
 			</Flex>
 		</Box>
 	);
