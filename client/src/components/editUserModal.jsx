@@ -26,33 +26,6 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 	});
 	const [isAdmin, setIsAdmin] = useState(false);
 
-	const checkAdmin = async () => {
-		try {
-			const response = await window.fetch(
-				`http://localhost:3001/api/isAdmin/${localStorage.getItem(
-					"token"
-				)}`,
-				{
-					method: "GET",
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
-					},
-				}
-			);
-			if (!response.ok) {
-				throw new Error(`Error: ${response.statusText}`);
-			}
-			const json = await response.json();
-			if (json.msg) {
-				setIsAdmin(true);
-			}
-		} catch (error) {
-			console.error("There was an error!", error);
-		}
-	};
-
 	useEffect(() => {
 		reset(userData);
 	}, [userData, reset]);
