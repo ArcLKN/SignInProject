@@ -64,6 +64,31 @@ async function deleteOneUser(req, res) {
 	res.status(500).json({ errors: result.array() });
 }
 
+async function deleteManyUsers(req, res) {
+	const result = validationResult(req.body);
+	if (!result.isEmpty) {
+		res.status(500).json({ errors: result.array() });
+	}
+	try {
+		let userIds = req.body;
+		const currentUserId = req.user._id;
+
+		userIds = userIds.filter((id) => id !== currentUserId.toString());
+
+		const deleteResult = await UserModel.deleteMany({
+			_id: { $in: userIds },
+		});
+		console.log("Sucessufully deleted users:", userIds);
+		return res.status(200).json({
+			msg: userIds,
+			error: "Success",
+		});
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		return res.status(400).json({ error: "Error fetching users" });
+	}
+}
+
 async function updateUser(req, res) {
 	const result = validationResult(req);
 	if (!result.isEmpty()) {
@@ -118,4 +143,5 @@ module.exports = {
 	addUser,
 	deleteOneUser,
 	updateUser,
+	deleteManyUsers,
 };
