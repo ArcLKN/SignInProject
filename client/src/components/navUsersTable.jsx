@@ -17,6 +17,7 @@ import { SearchIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { colors } from "../styleVariables.jsx";
 import AddUserButton from "./addUserButton.jsx";
 import BulkDeleteUsers from "./bulkDeleteUsers.jsx";
+import ExportUsersButton from "./exportUsersButtons.jsx";
 
 export default function NavUsersTable({
 	isAdmin,
@@ -92,14 +93,24 @@ export default function NavUsersTable({
 								doShowBulkDelete && (
 									<BulkDeleteUsers
 										bulkDeleteUsers={bulkDeleteUsers}
+										selectedRows={selectedRows}
 									/>
 								)}
 						</HStack>
 					</Flex>
 				</Box>
-				{isAdmin && (
-					<AddUserButton showAddUserModal={showAddUserModal} />
-				)}
+				<Box>
+					<Flex>
+						<HStack>
+							{isAdmin && <ExportUsersButton />}
+							{isAdmin && (
+								<AddUserButton
+									showAddUserModal={showAddUserModal}
+								/>
+							)}
+						</HStack>
+					</Flex>
+				</Box>
 			</Flex>
 		</Box>
 	);
