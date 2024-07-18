@@ -26,6 +26,7 @@ router.post(
 	addUser
 );
 router.put("/users/:id", authenticateToken, updateUser);
+// router.put("users/:id/:key", authenticateToken, updateUserData)
 
 router.delete(
 	"/users/:id",
