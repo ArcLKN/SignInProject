@@ -23,8 +23,10 @@ import {
 	getUser,
 	databaseUpdateUser,
 	bulkDeleteUsers,
+	updateUserData,
 } from "../api/UserRoutes.jsx";
 import EditUserModal from "../components/editUserModal.jsx";
+import ResetPasswordModal from "../components/resetPasswordModal.jsx";
 
 export default function Users() {
 	const navigate = useNavigate();
@@ -32,12 +34,15 @@ export default function Users() {
 	const [selectedRows, setSelectedRows] = useState({});
 	const [selectAll, setSelectAll] = useState(false);
 	const [doShowAddUserModal, setDoShowAddUserModal] = useState(false);
+	const [doShowResetUserPasswordModal, setDoShowResetUserPasswordModal] =
+		useState(false);
 	const [doShowEditUserModal, setDoShowEditUserModal] = useState(false);
 	const [doShowBulkDelete, setDoShowBulkDelete] = useState(true);
 	const [editUserId, setEditUserId] = useState({
 		firstName: "",
 		lastName: "",
 	});
+	const [resetUserPasswordId, setResetUserPasswordId] = useState(null);
 	const [mockupUsers, setUsers] = useState({});
 	const [sortByUserType, setSortByUserType] = useState("");
 	const [searchFilter, setSearchFilter] = useState("");
@@ -184,6 +189,11 @@ export default function Users() {
 
 	function showAddUserModal(userId) {
 		setDoShowAddUserModal(true);
+	}
+
+	function showResetUserPasswordModal(userId) {
+		setDoShowResetUserPasswordModal(true);
+		setResetUserPasswordId(userId);
 	}
 
 	async function showEditUserModal(userId) {
@@ -386,6 +396,12 @@ export default function Users() {
 				editUser={editUser}
 				userData={editUserId}
 			/>
+			<ResetPasswordModal
+				isOpen={doShowResetUserPasswordModal}
+				doOpen={setDoShowResetUserPasswordModal}
+				resetUserPassword={updateUserData}
+				resetUserPasswordId={resetUserPasswordId}
+			/>
 			<Flex direction={"column"} h='100%'>
 				<Box mb='5'>
 					<Flex align='center' justify={"space-between"}>
@@ -429,6 +445,9 @@ export default function Users() {
 									setSelectAll={setSelectAll}
 									deleteUser={deleteUser}
 									showEditUserModal={showEditUserModal}
+									showResetUserPasswordModal={
+										showResetUserPasswordModal
+									}
 								/>
 							) : (
 								<UsersEmptyState />

@@ -1,6 +1,7 @@
 // /server/controllers/userController.js
 const UserModel = require("../models/User");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 
 async function getUsers(req, res) {
 	try {
@@ -137,6 +138,54 @@ async function updateUser(req, res) {
 	}
 }
 
+async function updateUserData(req, res) {
+	const result = validationResult(req);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ errors: result.array() });
+	}
+	try {
+		const userId = req.params.id;
+		const dataToUpdate = req.params.key;
+		const id = req.user._id;
+
+		if (userId !== id)
+			return res.status(403).json({ error: "Not enough permissions" });
+
+		const eventData = { ...req.body };
+
+		if (dataToUpdate === "password") {
+			if (eventData.newPassword !== eventData.confirmNewPassword) {
+				return res
+					.status(400)
+					.json({ error: "Passwords don't match." });
+			}
+			const user = await UserModel.findOne({
+				_id: userId,
+			}).select("password");
+			if (!user) {
+				return res.status(400).json({ error: "Invalid user id" });
+			}
+			const isMatch = await bcrypt.compare(
+				eventData.oldPassword,
+				user.password
+			);
+			if (!isMatch) {
+				return res.status(400).json({ error: "Invalid credentials" });
+			}
+			user.password = await bcrypt.hash(eventData.newPassword, 10);
+			await user.save();
+		}
+
+		return res.status(200).json({
+			userId: userId,
+			error: "Success",
+		});
+	} catch (error) {
+		console.error("Error updating user:", error);
+		return res.status(500).json({ error: "Error updating user" });
+	}
+}
+
 module.exports = {
 	getUsers,
 	getUser,
@@ -144,4 +193,5 @@ module.exports = {
 	deleteOneUser,
 	updateUser,
 	deleteManyUsers,
+	updateUserData,
 };

@@ -28,6 +28,7 @@ export default function UsersTable({
 	setSelectAll,
 	deleteUser,
 	showEditUserModal,
+	showResetUserPasswordModal,
 }) {
 	function selectRow(userId) {
 		setSelectedRows((prev) => {
@@ -153,6 +154,9 @@ export default function UsersTable({
 									deleteUser={deleteUser}
 									_id={value._id}
 									showEditUserModal={showEditUserModal}
+									showResetUserPasswordModal={
+										showResetUserPasswordModal
+									}
 								/>
 							</MenuGroup>
 						</MenuList>
