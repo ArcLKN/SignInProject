@@ -28,7 +28,13 @@ async function getUserManageOptions(userId) {
 	}
 }
 
-const UserActionsMenu = ({ userId, deleteUser, _id, showEditUserModal }) => {
+const UserActionsMenu = ({
+	userId,
+	deleteUser,
+	_id,
+	showEditUserModal,
+	resetUserPassword,
+}) => {
 	const [options, setOptions] = useState({});
 	useEffect(() => {
 		const fetchOptions = async () => {
@@ -55,6 +61,8 @@ const UserActionsMenu = ({ userId, deleteUser, _id, showEditUserModal }) => {
 							deleteUser(userId, _id);
 						} else if (key === "edit") {
 							showEditUserModal(_id);
+						} else if (key === "password") {
+							resetUserPassword(_id);
 						}
 					}}
 				>
