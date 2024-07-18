@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Box, Flex, HStack, Button } from "@chakra-ui/react";
+import React from "react";
+import { Button } from "@chakra-ui/react";
 import { colors } from "../styleVariables";
 
 const AddUserButton = ({ showAddUserModal }) => {
