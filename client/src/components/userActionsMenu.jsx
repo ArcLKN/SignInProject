@@ -33,7 +33,7 @@ const UserActionsMenu = ({
 	deleteUser,
 	_id,
 	showEditUserModal,
-	resetUserPassword,
+	showResetUserPasswordModal,
 }) => {
 	const [options, setOptions] = useState({});
 	useEffect(() => {
@@ -62,7 +62,7 @@ const UserActionsMenu = ({
 						} else if (key === "edit") {
 							showEditUserModal(_id);
 						} else if (key === "password") {
-							resetUserPassword(_id);
+							showResetUserPasswordModal(_id);
 						}
 					}}
 				>
