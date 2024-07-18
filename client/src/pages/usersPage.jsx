@@ -290,9 +290,7 @@ export default function Users() {
 	}
 
 	async function deleteUser(userDictId, userIdentifier) {
-		console.log("trueId", userIdentifier);
 		const result = await databaseDeleteUser({ id: userIdentifier });
-		console.log(result);
 		if (result) {
 			delete mockupUsers[userDictId];
 			setUsers(mockupUsers);
@@ -301,16 +299,12 @@ export default function Users() {
 	}
 
 	async function editUser(newUserData) {
-		console.log("Data New!", newUserData);
 		const result = await databaseUpdateUser(newUserData);
-		console.log("Results", result);
 		if (result) {
 			const userIndex = mockupUsers.findIndex(
 				(user) => user._id === result.userId
 			);
-			console.log(userIndex);
 			if (userIndex !== -1) {
-				console.log("WADS");
 				mockupUsers[userIndex] = {
 					...mockupUsers[userIndex],
 					...result.msg,
