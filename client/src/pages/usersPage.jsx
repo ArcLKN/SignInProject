@@ -22,6 +22,7 @@ import {
 	editUser,
 	getUser,
 	databaseUpdateUser,
+	bulkDeleteUsers,
 } from "../api/UserRoutes.jsx";
 import EditUserModal from "../components/editUserModal.jsx";
 
@@ -32,6 +33,7 @@ export default function Users() {
 	const [selectAll, setSelectAll] = useState(false);
 	const [doShowAddUserModal, setDoShowAddUserModal] = useState(false);
 	const [doShowEditUserModal, setDoShowEditUserModal] = useState(false);
+	const [doShowBulkDelete, setDoShowBulkDelete] = useState(true);
 	const [editUserId, setEditUserId] = useState({
 		firstName: "",
 		lastName: "",
@@ -45,6 +47,7 @@ export default function Users() {
 	const [maxPages, setMaxPages] = useState(
 		Math.ceil(Object.entries(mockupUsers).length / userPerPage)
 	);
+	const [isAdmin, setIsAdmin] = useState(false);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -66,7 +69,33 @@ export default function Users() {
 				setLoading(false);
 			}
 		};
-
+		const checkAdmin = async () => {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				return;
+			}
+			try {
+				const response = await window.fetch(
+					`http://localhost:3001/api/isAdmin/${token}`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+				if (!response.ok) {
+					throw new Error(`${response.statusText}`);
+				}
+				const json = await response.json();
+				if (json.msg) {
+					setIsAdmin(true);
+				}
+			} catch (error) {
+				console.error("There was an error!", error);
+			}
+		};
+		checkAdmin();
 		fetchData();
 	}, [navigate]);
 
@@ -313,11 +342,36 @@ export default function Users() {
 		setSortByUserType(newSort);
 		getSortedList({ updatedUserTypeSort: newSort, updatedActualPage: 1 });
 	}
-
 	function searchBarFilter(event) {
 		const newSearch = event.target.value.toLowerCase();
 		setSearchFilter(newSearch);
 		getSortedList({ updatedSearchFilter: newSearch, updatedActualPage: 1 });
+	}
+
+	async function bulkDeleteUsersIntermediary() {
+		if (Object.values(selectedRows).every((value) => value)) return;
+
+		try {
+			// Extract user ids from the dict key of their selected row.
+			const allToBeDeletedKeys = Object.keys(selectedRows).map((key) => {
+				if (selectedRows[key]) mockupUsers[key]._id;
+			});
+
+			const result = await bulkDeleteUsers(allToBeDeletedKeys);
+
+			if (result) {
+				const { msg: idsToDelete } = result;
+				setSelectedRows({});
+
+				const updatedMockupUsers = mockupUsers.filter(
+					(user) => !idsToDelete.includes(user._id)
+				);
+				setUsers(updatedMockupUsers);
+				getSortedList({ updatedUsers: updatedMockupUsers });
+			}
+		} catch (error) {
+			console.error("Error during bulk user deletion:", error);
+		}
 	}
 
 	function logout() {
@@ -362,10 +416,14 @@ export default function Users() {
 					>
 						<Flex direction={"column"} h='100%'>
 							<NavUsersTable
+								isAdmin={isAdmin}
 								showAddUserModal={showAddUserModal}
 								changeUserType={changeUserType}
 								sortByUserType={sortByUserType}
 								searchBarFilter={searchBarFilter}
+								doShowBulkDelete={doShowBulkDelete}
+								bulkDeleteUsers={bulkDeleteUsersIntermediary}
+								selectedRows={selectedRows}
 							/>
 							{Object.keys(sortedUsers).length > 0 ? (
 								<UsersTable
