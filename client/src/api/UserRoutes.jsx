@@ -70,6 +70,7 @@ export async function checkUser(event) {
 			}
 		);
 		const json = await response.json();
+		console.log(response, json);
 		if (json.msg && json.token) {
 			localStorage.setItem("token", json.token);
 			window.location.href = "/users";
@@ -138,5 +139,28 @@ export async function databaseUpdateUser(newUserData) {
 	} catch (error) {
 		console.error("There was an error!", error);
 		// Handle the error appropriately
+	}
+}
+
+export async function bulkDeleteUsers(usersList) {
+	const token = localStorage.getItem("token");
+	if (!token) return;
+	try {
+		const response = await window.fetch(`http://localhost:3001/api/users`, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(usersList),
+		});
+
+		if (!response.ok) {
+			throw new Error(`Error: ${response.statusText}`);
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error("There was an error!", error);
 	}
 }

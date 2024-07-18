@@ -16,12 +16,17 @@ import {
 import { SearchIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { colors } from "../styleVariables.jsx";
 import AddUserButton from "./addUserButton.jsx";
+import BulkDeleteUsers from "./bulkDeleteUsers.jsx";
 
 export default function NavUsersTable({
+	isAdmin,
 	showAddUserModal,
 	changeUserType,
 	sortByUserType,
 	searchBarFilter,
+	doShowBulkDelete,
+	bulkDeleteUsers,
+	selectedRows,
 }) {
 	return (
 		<Box p='2'>
@@ -68,6 +73,8 @@ export default function NavUsersTable({
 								<MenuButton
 									background='white'
 									color={colors.dagrey}
+									ml='15px'
+									mr='15px'
 								>
 									<HamburgerIcon />
 								</MenuButton>
@@ -77,10 +84,22 @@ export default function NavUsersTable({
 									</MenuItem>
 								</MenuList>
 							</Menu>
+							{!Object.values(selectedRows).every(
+								(value) => !value
+							) &&
+								Object.keys(selectedRows).length > 0 &&
+								isAdmin &&
+								doShowBulkDelete && (
+									<BulkDeleteUsers
+										bulkDeleteUsers={bulkDeleteUsers}
+									/>
+								)}
 						</HStack>
 					</Flex>
 				</Box>
-				<AddUserButton showAddUserModal={showAddUserModal} />
+				{isAdmin && (
+					<AddUserButton showAddUserModal={showAddUserModal} />
+				)}
 			</Flex>
 		</Box>
 	);
