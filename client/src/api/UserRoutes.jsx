@@ -164,3 +164,34 @@ export async function bulkDeleteUsers(usersList) {
 		console.error("There was an error!", error);
 	}
 }
+
+export async function updateUserData(dataKey, userId, data) {
+	console.log(data);
+	const token = localStorage.getItem("token");
+	if (!token) return;
+	if (!userId) return { error: "Invalid user id" };
+	try {
+		const response = await window.fetch(
+			`http://localhost:3001/api/users/${userId}/${dataKey}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(data),
+			}
+		);
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(
+				`${response.status} ${errorData.error || response.statusText}`
+			);
+		}
+		const result = await response.json();
+		return result;
+	} catch (error) {
+		console.error("There was an error!", error);
+		return { error: error.message };
+	}
+}
