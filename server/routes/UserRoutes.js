@@ -8,6 +8,7 @@ const {
 	addUser,
 	deleteOneUser,
 	updateUser,
+	deleteManyUsers,
 } = require("../controllers/userController.js");
 const checkUserOwnership = require("../middlewares/checkUserOwnership.js");
 const checkUserType = require("../middlewares/checkUserType.js");
@@ -38,5 +39,11 @@ router.delete(
 	authenticateToken,
 	checkUserType(["Admin", "Super Admin"]),
 	deleteOneUser
+);
+router.delete(
+	"/users",
+	authenticateToken,
+	checkUserType(["Admin", "Super Admin"]),
+	deleteManyUsers
 );
 module.exports = router;
