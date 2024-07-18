@@ -137,7 +137,9 @@ async function checkLogin(req, res) {
 				.status(400)
 				.json({ error: "Please verify your account before sign-in." });
 		}
+
 		const isMatch = await bcrypt.compare(loginPassword, user.password);
+
 		if (!isMatch) {
 			return res.status(400).json({ error: "Invalid credentials" });
 		}

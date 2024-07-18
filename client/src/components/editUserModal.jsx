@@ -104,7 +104,6 @@ export default function EditUserModal({ isOpen, doOpen, editUser, userData }) {
 	const EditUserModalInputs = Object.keys(userData).map((key) => {
 		if (inputConfig[key]) {
 			if (inputConfig[key].doAdmin && !isAdmin) {
-				console.log(key, "should be disabled");
 				isDisabled = true;
 			} else {
 				isDisabled = false;
