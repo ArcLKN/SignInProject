@@ -30,22 +30,31 @@ export default function UsersTable({
 	showEditUserModal,
 }) {
 	function selectRow(userId) {
-		setSelectedRows((prev) => ({
-			...prev,
-			[userId]: !prev[userId],
-		}));
-		console.log(selectedRows);
+		setSelectedRows((prev) => {
+			const newSelectedRows = {
+				...prev,
+				[userId]: !prev[userId],
+			};
+			console.log(newSelectedRows);
+			return newSelectedRows;
+		});
 	}
 
 	function selectAllRows(event) {
 		const checked = event.target.checked;
+		console.log("Is checked", checked);
 		const newSelectedRows = {};
 		if (checked) {
-			for (let key in sortedUsers) {
-				newSelectedRows[key] = true;
-			}
+			Object.keys(sortedUsers).forEach(
+				(key) => (newSelectedRows[key] = true)
+			);
+		} else {
+			Object.keys(sortedUsers).forEach(
+				(key) => (newSelectedRows[key] = false)
+			);
 		}
 		setSelectAll(checked);
+		console.log(newSelectedRows);
 		setSelectedRows(newSelectedRows);
 	}
 
