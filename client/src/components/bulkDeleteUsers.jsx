@@ -10,7 +10,11 @@ export default function BulkDeleteUsers({ bulkDeleteUsers, selectedRows }) {
 						colorScheme={"red"}
 						onClick={() => bulkDeleteUsers(selectedRows)}
 					>
-						Delete Users
+						{`Delete Users (${
+							Object.values(selectedRows).filter(
+								(value) => value === true
+							).length
+						})`}
 					</Button>
 				</HStack>
 			</Flex>
