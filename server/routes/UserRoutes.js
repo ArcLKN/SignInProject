@@ -9,6 +9,7 @@ const {
 	deleteOneUser,
 	updateUser,
 	deleteManyUsers,
+	updateUserData,
 } = require("../controllers/userController.js");
 const checkUserOwnership = require("../middlewares/checkUserOwnership.js");
 const checkUserType = require("../middlewares/checkUserType.js");
@@ -26,7 +27,7 @@ router.post(
 	addUser
 );
 router.put("/users/:id", authenticateToken, updateUser);
-// router.put("users/:id/:key", authenticateToken, updateUserData)
+router.put("/users/:id/:key", authenticateToken, updateUserData);
 
 router.delete(
 	"/users/:id",
