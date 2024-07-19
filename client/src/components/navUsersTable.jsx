@@ -28,6 +28,7 @@ export default function NavUsersTable({
 	doShowBulkDelete,
 	bulkDeleteUsers,
 	selectedRows,
+	setDoShowExportModal,
 }) {
 	return (
 		<Box p='2'>
@@ -102,7 +103,11 @@ export default function NavUsersTable({
 				<Box>
 					<Flex>
 						<HStack>
-							{isAdmin && <ExportUsersButton />}
+							{isAdmin && (
+								<ExportUsersButton
+									setDoShowExportModal={setDoShowExportModal}
+								/>
+							)}
 							{isAdmin && (
 								<AddUserButton
 									showAddUserModal={showAddUserModal}

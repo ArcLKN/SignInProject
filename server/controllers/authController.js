@@ -17,7 +17,6 @@ async function sendConfirmationMail(userData, res) {
 		},
 	};
 	let transporter = nodemailer.createTransport(config);
-	console.log("token", emailToken);
 	let mailData = {
 		from: "kalidolkn@gmail.com",
 		to: userData.email,

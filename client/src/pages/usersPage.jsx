@@ -27,6 +27,9 @@ import {
 } from "../api/UserRoutes.jsx";
 import EditUserModal from "../components/editUserModal.jsx";
 import ResetPasswordModal from "../components/resetPasswordModal.jsx";
+import ExportUsersModal from "../components/exportUsersModal.jsx";
+import ExportMailModal from "../components/exportMailModal.jsx";
+import { sendMailTo } from "../api/UtilityRoutes.jsx";
 
 export default function Users() {
 	const navigate = useNavigate();
@@ -37,7 +40,12 @@ export default function Users() {
 	const [doShowResetUserPasswordModal, setDoShowResetUserPasswordModal] =
 		useState(false);
 	const [doShowEditUserModal, setDoShowEditUserModal] = useState(false);
-	const [doShowBulkDelete, setDoShowBulkDelete] = useState(true);
+	const [doShowBulkDelete, setDoShowBulkDelete] = useState(false);
+	const [doShowExportModal, setDoShowExportModal] = useState(false);
+	const [doShowExportMail, setDoShowExportMail] = useState({
+		isOpen: false,
+		type: null,
+	});
 	const [editUserId, setEditUserId] = useState({
 		firstName: "",
 		lastName: "",
@@ -194,6 +202,10 @@ export default function Users() {
 	function showResetUserPasswordModal(userId) {
 		setDoShowResetUserPasswordModal(true);
 		setResetUserPasswordId(userId);
+	}
+
+	function showExportModal() {
+		setDoShowExportModal(true);
 	}
 
 	async function showEditUserModal(userId) {
@@ -378,6 +390,13 @@ export default function Users() {
 		}
 	}
 
+	function intermediaryExportUsers(fileType, receiver) {
+		console.log(fileType, receiver);
+		if (fileType === "json") {
+			sendMailTo(sortedUsers, receiver);
+		}
+	}
+
 	function logout() {
 		localStorage.removeItem("token");
 		window.location.reload();
@@ -401,6 +420,16 @@ export default function Users() {
 				doOpen={setDoShowResetUserPasswordModal}
 				resetUserPassword={updateUserData}
 				resetUserPasswordId={resetUserPasswordId}
+			/>
+			<ExportUsersModal
+				isOpen={doShowExportModal}
+				doOpen={setDoShowExportModal}
+				setDoShowExportMail={setDoShowExportMail}
+			/>
+			<ExportMailModal
+				isOpen={doShowExportMail}
+				doOpen={setDoShowExportMail}
+				intermediaryExportUsers={intermediaryExportUsers}
 			/>
 			<Flex direction={"column"} h='100%'>
 				<Box mb='5'>
@@ -434,6 +463,7 @@ export default function Users() {
 								doShowBulkDelete={doShowBulkDelete}
 								bulkDeleteUsers={bulkDeleteUsersIntermediary}
 								selectedRows={selectedRows}
+								setDoShowExportModal={setDoShowExportModal}
 							/>
 							{Object.keys(sortedUsers).length > 0 ? (
 								<UsersTable

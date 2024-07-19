@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Box, Flex, HStack, Button } from "@chakra-ui/react";
+import React from "react";
+import { Button } from "@chakra-ui/react";
 import { colors } from "../styleVariables";
 
-const ExportUsersButton = () => {
+const ExportUsersButton = ({ setDoShowExportModal }) => {
 	return (
 		<Button
 			colorScheme={colors.gray}
-			//onClick={}
+			onClick={() => setDoShowExportModal(true)}
 		>
 			Export
 		</Button>
