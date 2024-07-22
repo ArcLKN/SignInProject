@@ -21,9 +21,9 @@ export default function ExportUsersModal({
 }) {
 	const exportsType = [
 		{ type: "json", label: "JSON" },
-		{ type: "csv", label: "CSV" },
+		//{ type: "csv", label: "CSV" },
 		{ type: "pdf", label: "PDF" },
-		{ type: "xls", label: "XLS" },
+		//{ type: "xls", label: "XLS" },
 	];
 
 	return (
