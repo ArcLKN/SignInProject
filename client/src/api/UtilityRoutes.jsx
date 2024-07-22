@@ -1,9 +1,9 @@
-export async function sendMailTo(data, receiver) {
+export async function sendMailTo(fileType, receiver, data) {
 	console.log(data);
 	const token = localStorage.getItem("token");
 	if (!token) return;
 	if (!receiver) return { error: "There must be an email" };
-	if (!dataUrl) return { error: "No valid data" };
+	if (!data) return { error: "No valid data" };
 	try {
 		const response = await window.fetch(`http://localhost:3001/api/email`, {
 			method: "POST",
@@ -11,7 +11,11 @@ export async function sendMailTo(data, receiver) {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,
 			},
-			body: JSON.stringify({ data: data, receiver: receiver }),
+			body: JSON.stringify({
+				data: data,
+				fileType: fileType,
+				receiver: receiver,
+			}),
 		});
 		if (!response.ok) {
 			const errorData = await response.json();

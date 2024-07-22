@@ -390,11 +390,13 @@ export default function Users() {
 		}
 	}
 
-	function intermediaryExportUsers(fileType, receiver) {
+	async function intermediaryExportUsers(fileType, receiver) {
 		console.log(fileType, receiver);
-		if (fileType === "json") {
-			sendMailTo(sortedUsers, receiver);
+		if (["json", "pdf"].includes(fileType)) {
+			const result = await sendMailTo(fileType, receiver, sortedUsers);
+			return result;
 		}
+		return { error: "Not a valid format." };
 	}
 
 	function logout() {
