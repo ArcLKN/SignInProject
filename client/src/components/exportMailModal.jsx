@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { colors } from "../styleVariables";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 export default function ExportMailModal({
 	isOpen,
@@ -27,8 +28,15 @@ export default function ExportMailModal({
 		formState: { errors },
 	} = useForm({});
 
-	function handleSend(data) {
-		intermediaryExportUsers(isOpen.type, data.email);
+	const [errorMessage, setErrorMessage] = useState("");
+
+	async function handleSend(data) {
+		const result = await intermediaryExportUsers(isOpen.type, data.email);
+		if (result.error) {
+			setErrorMessage(result.error);
+		} else {
+			doOpen(false);
+		}
 	}
 
 	return (
@@ -59,6 +67,9 @@ export default function ExportMailModal({
 							type='submit'
 							value='Send'
 						/>
+						<Center>
+							<Text color={colors.redError}>{errorMessage}</Text>
+						</Center>
 					</form>
 				</ModalBody>
 			</ModalContent>
