@@ -195,3 +195,61 @@ export async function updateUserData(dataKey, userId, data) {
 		return { error: error.message };
 	}
 }
+
+export async function updateSelfData(data) {
+	console.log(data);
+	const token = localStorage.getItem("token");
+	if (!token) return;
+	try {
+		const response = await window.fetch(
+			`http://localhost:3001/api/user/${token}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(data),
+			}
+		);
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(
+				`${response.status} ${errorData.error || response.statusText}`
+			);
+		}
+		const result = await response.json();
+		return result;
+	} catch (error) {
+		console.error("There was an error!", error);
+		return { error: error.message };
+	}
+}
+
+export async function getSelfData(keyToGet) {
+	const token = localStorage.getItem("token");
+	if (!token) return;
+	try {
+		const response = await window.fetch(
+			`http://localhost:3001/api/user/${token}/${keyToGet}`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(
+				`${response.status} ${errorData.error || response.statusText}`
+			);
+		}
+		const result = await response.json();
+		return result;
+	} catch (error) {
+		console.error("There was an error!", error);
+		return { error: error.message };
+	}
+}
