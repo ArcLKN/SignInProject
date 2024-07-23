@@ -7,6 +7,7 @@ const {
 	helloWorld,
 	generateRandomId,
 	isUserAdmin,
+	getUserName,
 } = require("../controllers/authController.js");
 const authenticateToken = require("../middlewares/auth");
 const router = express.Router();
@@ -41,5 +42,7 @@ router.get("/hello-world", helloWorld);
 router.post("/generate-random-id", generateRandomId);
 
 router.get("/isAdmin/:token", authenticateToken, isUserAdmin);
+
+router.get("/getUserName/:token", authenticateToken, getUserName);
 
 module.exports = router;
