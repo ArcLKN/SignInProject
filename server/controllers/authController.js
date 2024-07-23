@@ -171,7 +171,9 @@ async function isUserAdmin(req, res) {
 		const token = req.params.token;
 		const decoded = jwt.verify(token, process.env.SECRET_AUTH_TOKEN);
 
-		const user = await UserModel.findOne({ _id: decoded._id });
+		const user = await UserModel.findOne({ _id: decoded._id }).select(
+			"userType"
+		);
 
 		if (!user) {
 			return res.status(404).json({ msg: false });
@@ -180,8 +182,33 @@ async function isUserAdmin(req, res) {
 		if (["Admin", "Super Admin"].includes(user.userType)) {
 			return res.status(200).json({ msg: true });
 		}
-
 		return res.status(403).json({ msg: false });
+	} catch (error) {
+		console.error("Error fetching users:", error);
+		return res.status(500).json({ msg: false });
+	}
+}
+
+async function getUserName(req, res) {
+	const result = validationResult(req.params.token);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ msg: false });
+	}
+	try {
+		const token = req.params.token;
+		const decoded = jwt.verify(token, process.env.SECRET_AUTH_TOKEN);
+
+		const user = await UserModel.findOne({ _id: decoded._id }).select([
+			"firstName",
+			"lastName",
+		]);
+
+		if (!user) {
+			return res.status(404).json({ msg: false });
+		}
+		return res.status(200).json({
+			msg: { firstName: user.firstName, lastName: user.lastName },
+		});
 	} catch (error) {
 		console.error("Error fetching users:", error);
 		return res.status(500).json({ msg: false });
@@ -194,4 +221,5 @@ module.exports = {
 	helloWorld,
 	signUp,
 	checkLogin,
+	getUserName,
 };
