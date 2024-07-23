@@ -1,11 +1,12 @@
 import React from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
 import Login from "./pages/loginPage.jsx";
 import Users from "./pages/usersPage.jsx";
 import Home from "./pages/homePage.jsx";
 import SignUp from "./pages/signUpPage.jsx";
-import { ChakraProvider } from "@chakra-ui/react";
+import UserSettings from "./pages/userSettingsPage.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
 	{
 		path: "/sign-up",
 		element: <SignUp />,
+	},
+	{
+		path: "/user-settings",
+		element: <UserSettings />,
 	},
 ]);
 
