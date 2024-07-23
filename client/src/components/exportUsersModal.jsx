@@ -12,7 +12,6 @@ import {
 	Button,
 	HStack,
 } from "@chakra-ui/react";
-import { colors } from "../styleVariables";
 
 export default function ExportUsersModal({
 	isOpen,
@@ -21,7 +20,7 @@ export default function ExportUsersModal({
 }) {
 	const exportsType = [
 		{ type: "json", label: "JSON" },
-		//{ type: "csv", label: "CSV" },
+		{ type: "csv", label: "CSV" },
 		{ type: "pdf", label: "PDF" },
 		//{ type: "xls", label: "XLS" },
 	];
@@ -49,7 +48,7 @@ export default function ExportUsersModal({
 										});
 									}}
 								>
-									{exportType.type}
+									{exportType.label}
 								</Button>
 							))}
 						</HStack>
