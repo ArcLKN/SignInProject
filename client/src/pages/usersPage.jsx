@@ -8,6 +8,7 @@ import {
 	Text,
 	Flex,
 	IconButton,
+	Avatar,
 } from "@chakra-ui/react";
 import { LinkIcon } from "@chakra-ui/icons";
 import FooterPaginationControls from "../components/footerPaginationControls.jsx";
@@ -61,6 +62,11 @@ export default function Users() {
 		Math.ceil(Object.entries(mockupUsers).length / userPerPage)
 	);
 	const [isAdmin, setIsAdmin] = useState(false);
+	const [userProfilePicture, setUserProfilePicture] = useState(null);
+	const [userName, setUserName] = useState({
+		firstName: "Unknown",
+		lastName: "Unknown",
+	});
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -101,6 +107,7 @@ export default function Users() {
 					throw new Error(`${response.statusText}`);
 				}
 				const json = await response.json();
+				console.log(json);
 				if (json.msg) {
 					setIsAdmin(true);
 				}
@@ -108,6 +115,42 @@ export default function Users() {
 				console.error("There was an error!", error);
 			}
 		};
+		const getUserName = async () => {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				return;
+			}
+			try {
+				const response = await window.fetch(
+					`http://localhost:3001/api/getUserName/${token}`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+				if (!response.ok) {
+					throw new Error(`${response.statusText}`);
+				}
+				const json = await response.json();
+				console.log(json);
+				if (json.msg) {
+					setUserName({
+						firstName: json.msg.firstName,
+						lastName: json.msg.lastName,
+					});
+				}
+			} catch (error) {
+				console.error("There was an error!", error);
+			}
+		};
+		const storedProfilePicture = localStorage.getItem("profilePicture");
+		if (storedProfilePicture) {
+			setUserProfilePicture(storedProfilePicture);
+		}
+		console.log(storedProfilePicture);
+		getUserName();
 		checkAdmin();
 		fetchData();
 	}, [navigate]);
@@ -392,7 +435,7 @@ export default function Users() {
 
 	async function intermediaryExportUsers(fileType, receiver) {
 		console.log(fileType, receiver);
-		if (["json", "pdf"].includes(fileType)) {
+		if (["json", "pdf", "csv", "xls"].includes(fileType)) {
 			const result = await sendMailTo(fileType, receiver, sortedUsers);
 			return result;
 		}
@@ -444,7 +487,15 @@ export default function Users() {
 								<LinkIcon />
 							</IconButton>
 						</HStack>
-						<Button onClick={logout}>Logout</Button>
+						<Flex align={"center"}>
+							<HStack>
+								<Button onClick={logout}>Logout</Button>
+								<Avatar
+									name={`${userName.firstName} ${userName.lastName}`}
+									src={userProfilePicture}
+								/>
+							</HStack>
+						</Flex>
 					</Flex>
 				</Box>
 				<Center maxHeight='90%'>
