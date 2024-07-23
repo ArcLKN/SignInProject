@@ -174,6 +174,15 @@ async function updateUserData(req, res) {
 			}
 			user.password = await bcrypt.hash(eventData.newPassword, 10);
 			await user.save();
+		} else if (dataToUpdate === "socialPicture") {
+			const user = await UserModel.findOne({
+				_id: userId,
+			}).select("socialPicture");
+			if (!user) {
+				return res.status(400).json({ error: "Invalid user id" });
+			}
+			user.socialPicture = eventData.socialPicture;
+			await user.save();
 		}
 
 		return res.status(200).json({
@@ -186,6 +195,54 @@ async function updateUserData(req, res) {
 	}
 }
 
+async function updateUserFromToken(req, res) {
+	const result = validationResult(req);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ errors: result.array() });
+	}
+	try {
+		const id = req.user._id;
+		const eventData = { ...req.body };
+
+		delete eventData.password;
+		delete eventData._id;
+		delete eventData.email;
+		delete eventData.createdAt;
+		delete eventData.updatedAt;
+		delete eventData.__v;
+
+		await UserModel.updateOne({ _id: id }, eventData);
+		console.log("Successfully updated user:", id);
+	} catch (error) {
+		console.error("Error updating user:", error);
+		return res.status(500).json({ error: "Error updating user" });
+	}
+}
+
+async function getDataFromToken(req, res) {
+	const result = validationResult(req);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ errors: result.array() });
+	}
+	try {
+		const id = req.user._id;
+		const key = req.params.key;
+		const user = await UserModel.findOne({ _id: id }, eventData).select({
+			key,
+		});
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
+		if (!user[key]) {
+			return res.status(404).json({ error: "Data not found" });
+		}
+		return res.status(200).json({ msg: user[key] });
+	} catch (error) {
+		console.error("Error fetching user:", error);
+		return res.status(500).json({ error: "Error fetching user" });
+	}
+}
+
 module.exports = {
 	getUsers,
 	getUser,
@@ -194,4 +251,6 @@ module.exports = {
 	updateUser,
 	deleteManyUsers,
 	updateUserData,
+	updateUserFromToken,
+	getDataFromToken,
 };
