@@ -10,6 +10,7 @@ const {
 	updateUser,
 	deleteManyUsers,
 	updateUserData,
+	updateUserFromToken,
 } = require("../controllers/userController.js");
 const checkUserOwnership = require("../middlewares/checkUserOwnership.js");
 const checkUserType = require("../middlewares/checkUserType.js");
@@ -17,8 +18,8 @@ const router = express.Router();
 
 router.get("/users", authenticateToken, getUsers);
 router.get("/user/:id", authenticateToken, getUser);
+router.get("/user/:token/:key", authenticateToken);
 
-//router.get("/users/:id", authenticateToken, getUser);
 router.post(
 	"/users",
 	authenticateToken,
@@ -28,6 +29,7 @@ router.post(
 );
 router.put("/users/:id", authenticateToken, updateUser);
 router.put("/users/:id/:key", authenticateToken, updateUserData);
+router.put("/user/:token", authenticateToken, updateUserFromToken);
 
 router.delete(
 	"/users/:id",
