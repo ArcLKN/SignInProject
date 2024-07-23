@@ -90,8 +90,7 @@ export default function NavUsersTable({
 								(value) => !value
 							) &&
 								Object.keys(selectedRows).length > 0 &&
-								isAdmin &&
-								doShowBulkDelete && (
+								isAdmin && (
 									<BulkDeleteUsers
 										bulkDeleteUsers={bulkDeleteUsers}
 										selectedRows={selectedRows}
