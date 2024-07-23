@@ -145,11 +145,35 @@ export default function Users() {
 				console.error("There was an error!", error);
 			}
 		};
-		const storedProfilePicture = localStorage.getItem("profilePicture");
-		if (storedProfilePicture) {
-			setUserProfilePicture(storedProfilePicture);
-		}
-		console.log(storedProfilePicture);
+		const getProfilePicture = async () => {
+			const key = "socialPicture";
+			const token = localStorage.getItem("token");
+			if (!token) {
+				return;
+			}
+			try {
+				const response = await window.fetch(
+					`http://localhost:3001/api/user/${token}/${key}`,
+					{
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+				if (!response.ok) {
+					throw new Error(`${response.statusText}`);
+				}
+				const json = await response.json();
+				console.log(json);
+				if (json.msg) {
+					setUserProfilePicture(json.msg);
+				}
+			} catch (error) {
+				console.error("There was an error!", error);
+			}
+		};
+		getProfilePicture();
 		getUserName();
 		checkAdmin();
 		fetchData();
