@@ -39,8 +39,13 @@ export default function ExportMailModal({
 		}
 	}
 
+	function handleClose() {
+		doOpen(false);
+		setErrorMessage("");
+	}
+
 	return (
-		<Modal isOpen={isOpen.isOpen} onClose={() => doOpen(false)}>
+		<Modal isOpen={isOpen.isOpen} onClose={() => handleClose()}>
 			<ModalOverlay />
 			<ModalContent maxH={"100vh"}>
 				<ModalHeader>{"Export: " + isOpen.type}</ModalHeader>
