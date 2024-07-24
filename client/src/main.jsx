@@ -7,6 +7,8 @@ import Users from "./pages/usersPage.jsx";
 import Home from "./pages/homePage.jsx";
 import SignUp from "./pages/signUpPage.jsx";
 import UserSettings from "./pages/userSettingsPage.jsx";
+import ConfirmAccount from "./components/confirmAccount.jsx";
+import Projects from "./pages/projects.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
 	{
 		path: "/user-settings",
 		element: <UserSettings />,
+	},
+	{
+		path: "/confirm/:token",
+		element: <ConfirmAccount />,
+	},
+	{
+		path: "/projects",
+		element: <Projects />,
 	},
 ]);
 
