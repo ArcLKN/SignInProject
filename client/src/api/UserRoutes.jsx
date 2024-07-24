@@ -9,7 +9,7 @@ async function checkAuth() {
 
 export async function getUsers() {
 	const token = await checkAuth();
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	try {
 		const response = await window.fetch("http://localhost:3001/api/users", {
 			headers: {
@@ -21,7 +21,7 @@ export async function getUsers() {
 		}
 		const json = await response.json();
 		console.log(json);
-		return json["msg"];
+		return json;
 	} catch (error) {
 		console.error("Error fetching data:", error);
 		return null;
@@ -30,7 +30,7 @@ export async function getUsers() {
 
 export async function databaseDeleteUser(event) {
 	const token = localStorage.getItem("token");
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	try {
 		const response = await window.fetch(
 			`http://localhost:3001/api/users/${event.id}`,
@@ -91,10 +91,10 @@ export async function editUser(user) {}
 
 export async function getUser(userId) {
 	const token = await checkAuth();
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	try {
 		const response = await window.fetch(
-			`http://localhost:3001/api/user/${userId}`,
+			`http://localhost:3001/api/users/${userId}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -106,7 +106,7 @@ export async function getUser(userId) {
 		}
 		const json = await response.json();
 		console.log(json);
-		return json["msg"];
+		return json;
 	} catch (error) {
 		console.error("Error fetching data:", error);
 		return null;
@@ -116,7 +116,7 @@ export async function getUser(userId) {
 export async function databaseUpdateUser(newUserData) {
 	console.log(newUserData);
 	const token = localStorage.getItem("token");
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	try {
 		const response = await window.fetch(
 			`http://localhost:3001/api/users/${newUserData._id}`,
@@ -144,7 +144,7 @@ export async function databaseUpdateUser(newUserData) {
 
 export async function bulkDeleteUsers(usersList) {
 	const token = localStorage.getItem("token");
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	try {
 		const response = await window.fetch(`http://localhost:3001/api/users`, {
 			method: "DELETE",
@@ -168,7 +168,7 @@ export async function bulkDeleteUsers(usersList) {
 export async function updateUserData(dataKey, userId, data) {
 	console.log(data);
 	const token = localStorage.getItem("token");
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	if (!userId) return { error: "Invalid user id" };
 	try {
 		const response = await window.fetch(
@@ -199,19 +199,15 @@ export async function updateUserData(dataKey, userId, data) {
 export async function updateSelfData(data) {
 	console.log(data);
 	const token = localStorage.getItem("token");
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	try {
-		const response = await window.fetch(
-			`http://localhost:3001/api/user/${token}`,
-			{
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify(data),
-			}
-		);
+		const response = await window.fetch(`http://localhost:3001/api/user`, {
+			method: "PUT",
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			body: data,
+		});
 		if (!response.ok) {
 			const errorData = await response.json();
 			throw new Error(
@@ -228,10 +224,10 @@ export async function updateSelfData(data) {
 
 export async function getSelfData(keyToGet) {
 	const token = localStorage.getItem("token");
-	if (!token) return;
+	if (!token) return { error: "No token found" };
 	try {
 		const response = await window.fetch(
-			`http://localhost:3001/api/user/${token}/${keyToGet}`,
+			`http://localhost:3001/api/user/${keyToGet}`,
 			{
 				method: "GET",
 				headers: {
