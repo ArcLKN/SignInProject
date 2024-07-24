@@ -177,6 +177,7 @@ export default function UserSettings() {
 
 	return (
 		<>
+			<title>User Settings</title>
 			{isCropping && (
 				<Center h='100vh' w='100vw'>
 					<Box className='crop-container'>

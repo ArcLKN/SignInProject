@@ -53,6 +53,7 @@ function Login() {
 
 	return (
 		<>
+			<title>Sign-in</title>
 			<Box pos='absolute' p='15px'>
 				<ChakraLink as={ReactRouterLink} to='/'>
 					<Button w='100%' bgColor={colors.bgColor}>
