@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/User");
 const nodemailer = require("nodemailer");
-const fs = require("fs");
+const fs = require("fs/promises");
 const path = require("path");
 const { jsPDF } = require("jspdf");
 const { AsyncParser } = require("@json2csv/node");
@@ -145,6 +145,7 @@ async function sendDataTo(req, res) {
 		console.log("Success sending email");
 
 		// Clean up file after sending email
+		//TEST
 		fs.unlink(filePath).catch((err) =>
 			console.error("Error deleting file", err)
 		);
