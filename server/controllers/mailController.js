@@ -12,16 +12,25 @@ async function getConfirmation(req, res) {
 		const decoded = jwt.verify(token, process.env.SECRET_MAIL_TOKEN);
 		const user = await UserModel.findOne({ _id: decoded.id });
 		if (!user) {
-			return res.status(400).send("Invalid token.");
+			return res.status(400).send({ error: "Invalid token." });
 		}
 
 		user.verifiedUser = true;
 		await user.save();
-		res.send("Account confirmed successfully.");
-		return true;
+
+		const authToken = jwt.sign(
+			{ id: user._id, email: user.email },
+			SECRET_AUTH_TOKEN,
+			{ expiresIn: "1h" }
+		);
+
+		res.status(200).json({
+			message: "Account confirmed successfully.",
+			authToken,
+		});
 	} catch (error) {
 		console.log(error);
-		return res.status(400).send("Error confirming account.");
+		return res.status(400).send({ error: "Error confirming account." });
 	}
 }
 
