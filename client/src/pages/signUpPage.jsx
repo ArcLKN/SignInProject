@@ -20,7 +20,7 @@ import { colors } from "../styleVariables.jsx";
 
 // prettier-ignore
 const PATTERN = {
-  email: /^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/g,
+  email: /^[\w-\.+]+@([\w-]+.)+[\w-]{2,4}$/g,
   name: /^[\w -]{4,100}$/i,
   password: /^[\w \-\!\.\?]{4,100}$/,
 };
