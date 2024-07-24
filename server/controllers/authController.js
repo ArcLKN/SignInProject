@@ -127,7 +127,9 @@ async function checkLogin(req, res) {
 	const loginEmail = req.body.email;
 	const loginPassword = req.body.password;
 	try {
-		const user = await UserModel.findOne({ email: loginEmail }).lean();
+		const user = await UserModel.findOne({ email: loginEmail })
+			.select("-socialPicture")
+			.lean();
 		if (!user) {
 			return res.status(400).json({ error: "Invalid credentials" });
 		}
