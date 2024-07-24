@@ -10,16 +10,18 @@ const {
 	updateUser,
 	deleteManyUsers,
 	updateUserData,
-	updateUserFromToken,
-	getDataFromToken,
+	updateUserFromId,
+	getUserSpecificData,
 } = require("../controllers/userController.js");
-const checkUserOwnership = require("../middlewares/checkUserOwnership.js");
+//const checkUserOwnership = require("../middlewares/checkUserOwnership.js");
 const checkUserType = require("../middlewares/checkUserType.js");
 const router = express.Router();
+const multer = require("multer");
+const upload = multer({ dest: "public/images/" });
 
 router.get("/users", authenticateToken, getUsers);
-router.get("/user/:id", authenticateToken, getUser);
-router.get("/user/:token/:key", authenticateToken, getDataFromToken);
+router.get("/users/:id", authenticateToken, getUser);
+router.get("/user/:key", authenticateToken, getUserSpecificData);
 
 router.post(
 	"/users",
@@ -28,9 +30,9 @@ router.post(
 	checkUserType(["Admin", "Super Admin"]),
 	addUser
 );
-router.put("/users/:id", authenticateToken, updateUser);
+router.put("/users/:id", authenticateToken, updateUserFromId);
 router.put("/users/:id/:key", authenticateToken, updateUserData);
-router.put("/user/:token", authenticateToken, updateUserFromToken);
+router.put("/user", authenticateToken, upload.single("file"), updateUser);
 
 router.delete(
 	"/users/:id",

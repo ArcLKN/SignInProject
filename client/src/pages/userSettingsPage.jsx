@@ -83,8 +83,14 @@ export default function UserSettings() {
 			}
 		};
 		const getUserProfilePicture = async () => {
-			const response = await getSelfData("socialPicture");
-			setProfilePictureSrc(response.key);
+			try {
+				const response = await getSelfData("socialPicture");
+				const imageUrl = `http://localhost:3001/images/${response.key}`;
+				console.log("imageUrl", imageUrl, response.key);
+				setProfilePictureSrc(imageUrl);
+			} catch (error) {
+				console.error("Error fetching profile picture:", error);
+			}
 		};
 		getUserProfilePicture();
 		getUserName();
@@ -118,6 +124,7 @@ export default function UserSettings() {
 
 	async function handleUpdateData(data) {
 		try {
+			const formData = new FormData();
 			if (editedProfilePicture) {
 				const blob = await base64ToBlob(
 					editedProfilePicture,
@@ -128,8 +135,7 @@ export default function UserSettings() {
 					maxWidthOrHeight: 1024,
 					useWebWorker: true,
 				});
-				const compressedImageUrl = URL.createObjectURL(compressedImage);
-				setProfilePictureSrc(compressedImageUrl);
+
 				// Convert the compressed image to a Base64 string
 				const base64data = await new Promise((resolve, reject) => {
 					const reader = new FileReader();
@@ -138,15 +144,27 @@ export default function UserSettings() {
 					reader.onerror = (error) => reject(error);
 				});
 
-				data["socialPicture"] = base64data;
+				const response = await getSelfData("id");
+				const userId = response.key;
+				const fileName = `profilePicture_${userId}.jpg`;
+				const file = new File([compressedImage], fileName, {
+					type: "image/jpeg",
+				});
+
+				formData.append("file", file);
+
 				setProfilePictureSrc(base64data);
 				localStorage.setItem("profilePicture", base64data);
 				setNewProfilePictureSrc(null);
 				setEditedProfilePicture(null);
 			}
-			updateSelfData(data);
+
+			formData.append("firstName", data.firstName);
+			formData.append("lastName", data.lastName);
+
+			await updateSelfData(formData);
 		} catch (error) {
-			console.error(error);
+			console.error("Error in handleUpdateData:", error);
 		}
 	}
 

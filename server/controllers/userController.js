@@ -2,6 +2,8 @@
 const UserModel = require("../models/User");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
+const path = require("path");
 
 async function getUsers(req, res) {
 	try {
@@ -90,7 +92,7 @@ async function deleteManyUsers(req, res) {
 	}
 }
 
-async function updateUser(req, res) {
+async function updateUserFromId(req, res) {
 	const result = validationResult(req);
 	if (!result.isEmpty()) {
 		return res.status(400).json({ errors: result.array() });
@@ -195,7 +197,7 @@ async function updateUserData(req, res) {
 	}
 }
 
-async function updateUserFromToken(req, res) {
+async function updateUser(req, res) {
 	const result = validationResult(req);
 	if (!result.isEmpty()) {
 		return res.status(400).json({ errors: result.array() });
@@ -211,15 +213,24 @@ async function updateUserFromToken(req, res) {
 		delete eventData.updatedAt;
 		delete eventData.__v;
 
+		//console.log("Test", eventData.get("firstName"));
+
+		if (req.file) {
+			const filePath = req.file.filename;
+			eventData.socialPicture = filePath;
+			console.log("Path", filePath);
+		}
+
 		await UserModel.updateOne({ _id: id }, eventData);
 		console.log("Successfully updated user:", id);
+		return res.status(200).json({ msg: "Success updating user" });
 	} catch (error) {
 		console.error("Error updating user:", error);
 		return res.status(500).json({ error: "Error updating user" });
 	}
 }
 
-async function getDataFromToken(req, res) {
+async function getUserSpecificData(req, res) {
 	const result = validationResult(req);
 	if (!result.isEmpty()) {
 		return res.status(400).json({ errors: result.array() });
@@ -227,16 +238,19 @@ async function getDataFromToken(req, res) {
 	try {
 		const id = req.user._id;
 		const key = req.params.key;
-		const user = await UserModel.findOne({ _id: id }, eventData).select({
-			key,
-		});
+
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ error: "Invalid user ID" });
+		}
+
+		const user = await UserModel.findById(id).select(key);
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
 		}
 		if (!user[key]) {
 			return res.status(404).json({ error: "Data not found" });
 		}
-		return res.status(200).json({ msg: user[key] });
+		return res.status(200).json({ msg: "Success", key: user[key] });
 	} catch (error) {
 		console.error("Error fetching user:", error);
 		return res.status(500).json({ error: "Error fetching user" });
@@ -251,6 +265,6 @@ module.exports = {
 	updateUser,
 	deleteManyUsers,
 	updateUserData,
-	updateUserFromToken,
-	getDataFromToken,
+	updateUserFromId,
+	getUserSpecificData,
 };

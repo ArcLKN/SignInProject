@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import {
 	Box,
 	Button,
@@ -7,10 +7,9 @@ import {
 	HStack,
 	Text,
 	Flex,
-	IconButton,
 	Avatar,
+	Link as ChakraLink,
 } from "@chakra-ui/react";
-import { LinkIcon } from "@chakra-ui/icons";
 import FooterPaginationControls from "../components/footerPaginationControls.jsx";
 import UsersTable from "../components/usersTable.jsx";
 import NavUsersTable from "../components/navUsersTable.jsx";
@@ -20,11 +19,11 @@ import { colors } from "../styleVariables.jsx";
 import {
 	getUsers,
 	databaseDeleteUser,
-	editUser,
 	getUser,
 	databaseUpdateUser,
 	bulkDeleteUsers,
 	updateUserData,
+	getSelfData,
 } from "../api/UserRoutes.jsx";
 import EditUserModal from "../components/editUserModal.jsx";
 import ResetPasswordModal from "../components/resetPasswordModal.jsx";
@@ -41,7 +40,6 @@ export default function Users() {
 	const [doShowResetUserPasswordModal, setDoShowResetUserPasswordModal] =
 		useState(false);
 	const [doShowEditUserModal, setDoShowEditUserModal] = useState(false);
-	const [doShowBulkDelete, setDoShowBulkDelete] = useState(false);
 	const [doShowExportModal, setDoShowExportModal] = useState(false);
 	const [doShowExportMail, setDoShowExportMail] = useState({
 		isOpen: false,
@@ -71,8 +69,9 @@ export default function Users() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const allUsers = await getUsers();
-				if (allUsers) {
+				const response = await getUsers();
+				if (response.msg) {
+					const allUsers = response.msg;
 					setUsers(allUsers);
 					setSortedUsers(allUsers);
 					setMaxPages(
@@ -107,7 +106,6 @@ export default function Users() {
 					throw new Error(`${response.statusText}`);
 				}
 				const json = await response.json();
-				console.log(json);
 				if (json.msg) {
 					setIsAdmin(true);
 				}
@@ -134,7 +132,6 @@ export default function Users() {
 					throw new Error(`${response.statusText}`);
 				}
 				const json = await response.json();
-				console.log(json);
 				if (json.msg) {
 					setUserName({
 						firstName: json.msg.firstName,
@@ -145,35 +142,17 @@ export default function Users() {
 				console.error("There was an error!", error);
 			}
 		};
-		const getProfilePicture = async () => {
-			const key = "socialPicture";
-			const token = localStorage.getItem("token");
-			if (!token) {
-				return;
-			}
+		const getUserProfilePicture = async () => {
 			try {
-				const response = await window.fetch(
-					`http://localhost:3001/api/user/${token}/${key}`,
-					{
-						method: "GET",
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					}
-				);
-				if (!response.ok) {
-					throw new Error(`${response.statusText}`);
-				}
-				const json = await response.json();
-				console.log(json);
-				if (json.msg) {
-					setUserProfilePicture(json.msg);
-				}
+				const response = await getSelfData("socialPicture");
+				const imageUrl = `http://localhost:3001/images/${response.key}`;
+				console.log("imageUrl", imageUrl, response.key);
+				setUserProfilePicture(imageUrl);
 			} catch (error) {
-				console.error("There was an error!", error);
+				console.error("Error fetching profile picture:", error);
 			}
 		};
-		getProfilePicture();
+		getUserProfilePicture();
 		getUserName();
 		checkAdmin();
 		fetchData();
@@ -182,6 +161,7 @@ export default function Users() {
 	if (loading) {
 		return <div>Loading...</div>;
 	}
+
 	const mockupUsersKeys = {
 		//id: "Id",
 		createdAt: "Created At",
@@ -196,7 +176,7 @@ export default function Users() {
 		projectsCount: "Projects Count",
 		ideaProjectsCount: "Idea Projects Count",
 		reservationsCount: "Reservations Count",
-		socialPicture: "Social Picture",
+		//socialPicture: "Social Picture",
 		subscriptionsCount: "Subscriptions Count",
 		signUpMethod: "Sign Up Method",
 		stripeCustomedId: "Stripe Customer ID",
@@ -210,6 +190,7 @@ export default function Users() {
 		wizardSurveyPassed: "Wizard Survey Passed",
 	};
 
+	// Change new users list from parameters
 	function getSortedList({
 		updatedUsers = mockupUsers,
 		updatedUserTypeSort = sortByUserType,
@@ -262,7 +243,7 @@ export default function Users() {
 		setSelectAll(true);
 	}
 
-	function showAddUserModal(userId) {
+	function showAddUserModal() {
 		setDoShowAddUserModal(true);
 	}
 
@@ -279,8 +260,9 @@ export default function Users() {
 		setDoShowEditUserModal(true);
 		const fetchUserData = async () => {
 			try {
-				const userData = await getUser(userId); // Waiting for promise
-				if (userData) {
+				const response = await getUser(userId); // Waiting for promise
+				if (response.msg) {
+					const userData = response.msg;
 					setEditUserId(userData);
 				}
 			} catch (error) {
@@ -380,7 +362,7 @@ export default function Users() {
 
 	async function deleteUser(userDictId, userIdentifier) {
 		const result = await databaseDeleteUser({ id: userIdentifier });
-		if (result) {
+		if (result.msg) {
 			delete mockupUsers[userDictId];
 			setUsers(mockupUsers);
 			getSortedList({ updatedUsers: mockupUsers });
@@ -389,7 +371,7 @@ export default function Users() {
 
 	async function editUser(newUserData) {
 		const result = await databaseUpdateUser(newUserData);
-		if (result) {
+		if (result.msg) {
 			const userIndex = mockupUsers.findIndex(
 				(user) => user._id === result.userId
 			);
@@ -442,7 +424,7 @@ export default function Users() {
 
 			const result = await bulkDeleteUsers(allToBeDeletedKeys);
 
-			if (result) {
+			if (result.msg) {
 				const { msg: idsToDelete } = result;
 				setSelectedRows({});
 
@@ -458,7 +440,6 @@ export default function Users() {
 	}
 
 	async function intermediaryExportUsers(fileType, receiver) {
-		console.log(fileType, receiver);
 		if (["json", "pdf", "csv", "xls"].includes(fileType)) {
 			const result = await sendMailTo(fileType, receiver, sortedUsers);
 			return result;
@@ -507,17 +488,19 @@ export default function Users() {
 							<Text fontSize='4xl' fontWeight='bold'>
 								Users
 							</Text>
-							<IconButton background='white'>
-								<LinkIcon />
-							</IconButton>
 						</HStack>
 						<Flex align={"center"}>
-							<HStack>
+							<HStack spacing='24px'>
 								<Button onClick={logout}>Logout</Button>
-								<Avatar
-									name={`${userName.firstName} ${userName.lastName}`}
-									src={userProfilePicture}
-								/>
+								<ChakraLink
+									as={ReactRouterLink}
+									to='/user-settings'
+								>
+									<Avatar
+										name={`${userName.firstName} ${userName.lastName}`}
+										src={userProfilePicture}
+									/>
+								</ChakraLink>
 							</HStack>
 						</Flex>
 					</Flex>
@@ -537,7 +520,6 @@ export default function Users() {
 								changeUserType={changeUserType}
 								sortByUserType={sortByUserType}
 								searchBarFilter={searchBarFilter}
-								doShowBulkDelete={doShowBulkDelete}
 								bulkDeleteUsers={bulkDeleteUsersIntermediary}
 								selectedRows={selectedRows}
 								setDoShowExportModal={setDoShowExportModal}

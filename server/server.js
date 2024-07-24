@@ -4,8 +4,8 @@ process.env.PORT = config.port;
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const bodyParser = require("body-parser");
-const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
 const uri =
 	"mongodb+srv://raphaelg0:r7S9oB9z6nndHNoB@cluster0.objvoj1.mongodb.net/backoffice?retryWrites=true&w=majority";
@@ -15,10 +15,13 @@ const clientOptions = {
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = process.env.PORT;
+
+app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 const userRoutes = require("./routes/UserRoutes.js");
 const authRoutes = require("./routes/AuthRoutes.js");
@@ -39,7 +42,6 @@ async function run() {
 			"Pinged your deployment. You successfully connected to MongoDB!"
 		);
 	} finally {
-		// Ensures that the client will close when you finish/error
 	}
 }
 
@@ -49,7 +51,6 @@ app.listen(PORT, () => {
 
 run().catch((err) => console.log(err));
 
-// Déconnexion de MongoDB à la fermeture de l'application
 process.on("SIGINT", async () => {
 	await mongoose.disconnect();
 	console.log("Disconnected from MongoDB");
