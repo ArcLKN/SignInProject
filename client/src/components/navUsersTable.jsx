@@ -25,7 +25,6 @@ export default function NavUsersTable({
 	changeUserType,
 	sortByUserType,
 	searchBarFilter,
-	doShowBulkDelete,
 	bulkDeleteUsers,
 	selectedRows,
 	setDoShowExportModal,
