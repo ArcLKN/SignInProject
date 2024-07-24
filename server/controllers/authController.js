@@ -21,7 +21,7 @@ async function sendConfirmationMail(userData, res) {
 		from: "kalidolkn@gmail.com",
 		to: userData.email,
 		subject: "Welcome to Prelaunch Backoffice!",
-		html: `Please validate your account by clicking on this link: <a href="http://localhost:3001/api/email/${emailToken}">Confirm Account</a>`,
+		html: `Please validate your account by clicking on this link: <a href="http://localhost:5173/confirm/${emailToken}">Confirm Account</a>`,
 	};
 
 	try {
