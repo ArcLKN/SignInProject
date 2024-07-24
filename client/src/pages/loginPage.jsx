@@ -88,7 +88,7 @@ function Login() {
 							{...register("email", {
 								required: "Email is required.",
 								pattern: {
-									value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+									value: /^[\w-\.+]+@([\w-]+\.)+[\w-]{2,4}$/g,
 									message: "This is not an email.",
 								},
 							})}
