@@ -9,6 +9,7 @@ import {
 	Flex,
 	Avatar,
 	Link as ChakraLink,
+	Image,
 } from "@chakra-ui/react";
 import FooterPaginationControls from "../components/footerPaginationControls.jsx";
 import UsersTable from "../components/usersTable.jsx";
@@ -30,6 +31,7 @@ import ResetPasswordModal from "../components/resetPasswordModal.jsx";
 import ExportUsersModal from "../components/exportUsersModal.jsx";
 import ExportMailModal from "../components/exportMailModal.jsx";
 import { sendMailTo } from "../api/UtilityRoutes.jsx";
+import NavBar from "../components/navBar.jsx";
 
 export default function Users() {
 	const navigate = useNavigate();
@@ -73,7 +75,13 @@ export default function Users() {
 				if (response.msg) {
 					const allUsers = response.msg;
 					setUsers(allUsers);
-					setSortedUsers(allUsers);
+					const slicedAllUsers = Object.fromEntries(
+						Object.entries(allUsers).slice(
+							userPerPage * (actualPage - 1),
+							userPerPage * actualPage
+						)
+					);
+					setSortedUsers(slicedAllUsers);
 					setMaxPages(
 						Math.ceil(Object.entries(allUsers).length / userPerPage)
 					);
@@ -455,107 +463,100 @@ export default function Users() {
 	return (
 		<>
 			<title>Users</title>
-			<Box p='7' maxW='100vw' height='100vh'>
-				<AddUserModal
-					isOpen={doShowAddUserModal}
-					doOpen={setDoShowAddUserModal}
-					createNewUser={createNewUser}
-				/>
-				<EditUserModal
-					isOpen={doShowEditUserModal}
-					doOpen={setDoShowEditUserModal}
-					editUser={editUser}
-					userData={editUserId}
-				/>
-				<ResetPasswordModal
-					isOpen={doShowResetUserPasswordModal}
-					doOpen={setDoShowResetUserPasswordModal}
-					resetUserPassword={updateUserData}
-					resetUserPasswordId={resetUserPasswordId}
-				/>
-				<ExportUsersModal
-					isOpen={doShowExportModal}
-					doOpen={setDoShowExportModal}
-					setDoShowExportMail={setDoShowExportMail}
-				/>
-				<ExportMailModal
-					isOpen={doShowExportMail}
-					doOpen={setDoShowExportMail}
-					intermediaryExportUsers={intermediaryExportUsers}
-				/>
-				<Flex direction={"column"} h='100%'>
-					<Box mb='5'>
-						<Flex align='center' justify={"space-between"}>
-							<HStack spacing='24px'>
-								<Text fontSize='4xl' fontWeight='bold'>
-									Users
-								</Text>
-							</HStack>
-							<Flex align={"center"}>
+			<Box maxW='100vw' height='100vh'>
+				<NavBar />
+				<Box p='7' pt='2' pb='2' h='90%'>
+					<AddUserModal
+						isOpen={doShowAddUserModal}
+						doOpen={setDoShowAddUserModal}
+						createNewUser={createNewUser}
+					/>
+					<EditUserModal
+						isOpen={doShowEditUserModal}
+						doOpen={setDoShowEditUserModal}
+						editUser={editUser}
+						userData={editUserId}
+					/>
+					<ResetPasswordModal
+						isOpen={doShowResetUserPasswordModal}
+						doOpen={setDoShowResetUserPasswordModal}
+						resetUserPassword={updateUserData}
+						resetUserPasswordId={resetUserPasswordId}
+					/>
+					<ExportUsersModal
+						isOpen={doShowExportModal}
+						doOpen={setDoShowExportModal}
+						setDoShowExportMail={setDoShowExportMail}
+					/>
+					<ExportMailModal
+						isOpen={doShowExportMail}
+						doOpen={setDoShowExportMail}
+						intermediaryExportUsers={intermediaryExportUsers}
+					/>
+					<Flex direction={"column"} h='100%'>
+						<Box mb='1'>
+							<Flex align='center' justify={"space-between"}>
 								<HStack spacing='24px'>
-									<Button onClick={logout}>Logout</Button>
-									<ChakraLink
-										as={ReactRouterLink}
-										to='/user-settings'
-									>
-										<Avatar
-											name={`${userName.firstName} ${userName.lastName}`}
-											src={userProfilePicture}
-										/>
-									</ChakraLink>
+									<Text fontSize='4xl' fontWeight='bold'>
+										Users
+									</Text>
 								</HStack>
 							</Flex>
-						</Flex>
-					</Box>
-					<Center maxHeight='90%'>
-						<Box
-							rounded='20px'
-							borderWidth='1px'
-							w='100%'
-							h='100%'
-							color={colors.ligrey}
-						>
-							<Flex direction={"column"} h='100%'>
-								<NavUsersTable
-									isAdmin={isAdmin}
-									showAddUserModal={showAddUserModal}
-									changeUserType={changeUserType}
-									sortByUserType={sortByUserType}
-									searchBarFilter={searchBarFilter}
-									bulkDeleteUsers={
-										bulkDeleteUsersIntermediary
-									}
-									selectedRows={selectedRows}
-									setDoShowExportModal={setDoShowExportModal}
-								/>
-								{Object.keys(sortedUsers).length > 0 ? (
-									<UsersTable
-										mockupUsersKeys={mockupUsersKeys}
-										sortedUsers={sortedUsers}
+						</Box>
+						<Center maxHeight='90%'>
+							<Box
+								rounded='20px'
+								borderWidth='1px'
+								w='100%'
+								h='100%'
+								color={colors.ligrey}
+							>
+								<Flex direction={"column"} h='100%'>
+									<NavUsersTable
+										isAdmin={isAdmin}
+										showAddUserModal={showAddUserModal}
+										changeUserType={changeUserType}
+										sortByUserType={sortByUserType}
+										searchBarFilter={searchBarFilter}
+										bulkDeleteUsers={
+											bulkDeleteUsersIntermediary
+										}
 										selectedRows={selectedRows}
-										setSelectedRows={setSelectedRows}
-										selectAll={selectAll}
-										setSelectAll={setSelectAll}
-										deleteUser={deleteUser}
-										showEditUserModal={showEditUserModal}
-										showResetUserPasswordModal={
-											showResetUserPasswordModal
+										setDoShowExportModal={
+											setDoShowExportModal
 										}
 									/>
-								) : (
-									<UsersEmptyState />
-								)}
-								<FooterPaginationControls
-									actualPage={actualPage}
-									userPerPage={userPerPage}
-									maxPages={maxPages}
-									changeUsersPage={changeUsersPage}
-									changeUsersPerPage={changeUsersPerPage}
-								/>
-							</Flex>
-						</Box>
-					</Center>
-				</Flex>
+									{Object.keys(sortedUsers).length > 0 ? (
+										<UsersTable
+											mockupUsersKeys={mockupUsersKeys}
+											sortedUsers={sortedUsers}
+											selectedRows={selectedRows}
+											setSelectedRows={setSelectedRows}
+											selectAll={selectAll}
+											setSelectAll={setSelectAll}
+											deleteUser={deleteUser}
+											showEditUserModal={
+												showEditUserModal
+											}
+											showResetUserPasswordModal={
+												showResetUserPasswordModal
+											}
+										/>
+									) : (
+										<UsersEmptyState />
+									)}
+									<FooterPaginationControls
+										actualPage={actualPage}
+										userPerPage={userPerPage}
+										maxPages={maxPages}
+										changeUsersPage={changeUsersPage}
+										changeUsersPerPage={changeUsersPerPage}
+									/>
+								</Flex>
+							</Box>
+						</Center>
+					</Flex>
+				</Box>
 			</Box>
 		</>
 	);
