@@ -16,6 +16,7 @@ import Cropper from "react-easy-crop";
 import { getCroppedImg, base64ToBlob } from "../utils/canvaUtils.jsx";
 import { updateSelfData, getSelfData } from "../api/UserRoutes.jsx";
 import imageCompression from "browser-image-compression";
+import NavBar from "../components/navBar.jsx";
 
 const PATTERN = {
 	name: /^[\w -]{4,100}$/i,
@@ -202,17 +203,7 @@ export default function UserSettings() {
 			)}
 			{!isCropping && (
 				<>
-					<ChakraLink as={ReactRouterLink} to='/users'>
-						<Button
-							rounded={"0px"}
-							w='100%'
-							colorScheme={colors.mainColor}
-							bgColor='teal.300'
-							mb='50px'
-						>
-							Return
-						</Button>
-					</ChakraLink>
+					<NavBar />
 					<Center h='80vh' w='100wh' overflow={"hidden"}>
 						<Flex direction={"row"}>
 							<Flex direction={"column"} m={"10px"}>
