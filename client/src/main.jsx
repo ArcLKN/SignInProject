@@ -8,7 +8,7 @@ import Home from "./pages/homePage.jsx";
 import SignUp from "./pages/signUpPage.jsx";
 import UserSettings from "./pages/userSettingsPage.jsx";
 import ConfirmAccount from "./components/confirmAccount.jsx";
-import Projects from "./pages/projects.jsx";
+import Projects from "./pages/projectsPage.jsx";
 
 const router = createBrowserRouter([
 	{
