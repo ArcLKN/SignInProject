@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link as ReactRouterLink } from "react-router-dom";
-import { Link as ChakraLink } from "@chakra-ui/react";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ChakraLink, MenuDivider, MenuItem } from "@chakra-ui/react";
 import {
 	Button,
 	Flex,
@@ -9,16 +9,25 @@ import {
 	HStack,
 	Avatar,
 	Image,
+	Menu,
+	MenuButton,
+	Icon,
+	MenuList,
+	MenuGroup,
 } from "@chakra-ui/react";
+import { HamburgerIcon } from "@chakra-ui/icons";
+import { BiLogOut, BiCog, BiFolder, BiGroup } from "react-icons/bi";
 import { colors } from "../styleVariables.jsx";
 import { getSelfData } from "../api/UserRoutes.jsx";
 
 export default function NavBar() {
+	const navigate = useNavigate();
 	const [userProfilePicture, setUserProfilePicture] = useState(null);
 	const [userName, setUserName] = useState({
 		firstName: "Unknown",
 		lastName: "Unknown",
 	});
+	const [userEmail, setUserEmail] = useState("example@email.com");
 
 	useEffect(() => {
 		const getUserName = async () => {
@@ -62,8 +71,19 @@ export default function NavBar() {
 				console.error("Error fetching profile picture:", error);
 			}
 		};
+		const getUserMail = async () => {
+			try {
+				const response = await getSelfData("email");
+				if (response.key) {
+					setUserEmail(response.key);
+				}
+			} catch (error) {
+				console.error("Error fetching profile picture:", error);
+			}
+		};
 		getUserProfilePicture();
 		getUserName();
+		getUserMail();
 	}, []);
 
 	function logout() {
@@ -78,7 +98,7 @@ export default function NavBar() {
 			borderColor={colors.ligrey}
 			p='5px'
 		>
-			<Flex align='center' justify={"space-between"} w='100%'>
+			<Flex align='center' justify={"space-between"} w='100%' p='7px'>
 				<Box>
 					<ChakraLink as={ReactRouterLink} to='/'>
 						<Button bgColor={colors.bgColor}>
@@ -98,29 +118,122 @@ export default function NavBar() {
 						</Button>
 					</ChakraLink>
 				</Box>
-				<Box w='30%'>
-					<Flex direction={"row"} justify={"space-around"}>
-						<ChakraLink as={ReactRouterLink} to='/users'>
-							<Text fontWeight={"bold"}>Users</Text>
-						</ChakraLink>
-						<ChakraLink as={ReactRouterLink} to='/projects'>
-							<Text fontWeight={"bold"}>Projects</Text>
-						</ChakraLink>
-					</Flex>
-				</Box>
 				<Box pr='15px'>
 					<Flex align={"center"}>
 						<HStack spacing='24px'>
-							<Button onClick={logout}>Logout</Button>
-							<ChakraLink
-								as={ReactRouterLink}
-								to='/user-settings'
-							>
-								<Avatar
-									name={`${userName.firstName} ${userName.lastName}`}
-									src={userProfilePicture}
-								/>
-							</ChakraLink>
+							<Menu>
+								<MenuButton
+									as={Button}
+									bgColor={"white"}
+									rounded='20px'
+									border={"1px solid"}
+									borderColor={colors.ligrey}
+								>
+									<Flex align='center' direction={"row"}>
+										<HStack>
+											<Icon>
+												<HamburgerIcon />
+											</Icon>
+											<Avatar
+												size='xs'
+												name={`${userName.firstName} ${userName.lastName}`}
+												src={userProfilePicture}
+											/>
+										</HStack>
+									</Flex>
+								</MenuButton>
+								<MenuList zIndex='10' p='3'>
+									<MenuItem
+										_hover={{ bg: "transparent" }}
+										_focus={{ bg: "transparent" }}
+										pointerEvents='none'
+										padding='12px'
+										rounded='5px'
+									>
+										<HStack spacing={"24px"}>
+											<Avatar
+												name={`${userName.firstName} ${userName.lastName}`}
+												src={userProfilePicture}
+											/>
+											<Flex direction={"column"}>
+												<Text
+													color={colors.dagrey}
+													fontWeight={"bold"}
+												>
+													{userName.firstName}{" "}
+													{userName.lastName}
+												</Text>
+												<Text color={colors.mgrey}>
+													{userEmail}
+												</Text>
+											</Flex>
+										</HStack>
+									</MenuItem>
+									<MenuItem
+										padding='12px'
+										rounded='5px'
+										onClick={() =>
+											navigate("/user-settings")
+										}
+									>
+										<HStack spacing={"12px"}>
+											<BiCog size={24} />
+											<Text
+												fontSize={"lg"}
+												color={colors.dagrey}
+											>
+												Settings
+											</Text>
+										</HStack>
+									</MenuItem>
+									<MenuItem
+										padding='12px'
+										rounded='5px'
+										onClick={() => navigate("/users")}
+									>
+										<HStack spacing={"12px"}>
+											<BiGroup size={24} />
+											<Text
+												fontSize={"lg"}
+												color={colors.dagrey}
+											>
+												Users
+											</Text>
+										</HStack>
+									</MenuItem>
+									<MenuItem
+										padding='12px'
+										rounded='5px'
+										onClick={() => navigate("/projects")}
+									>
+										<HStack spacing={"12px"}>
+											<BiFolder size={24} />
+											<Text
+												fontSize={"lg"}
+												color={colors.dagrey}
+											>
+												Projects
+											</Text>
+										</HStack>
+									</MenuItem>
+									<MenuDivider />
+									<MenuItem
+										onClick={logout}
+										padding='12px'
+										rounded='5px'
+									>
+										<HStack spacing={"12px"}>
+											<BiLogOut size={24} />
+											<Text
+												fontSize={"lg"}
+												color={colors.dagrey}
+											>
+												Logout
+											</Text>
+										</HStack>
+									</MenuItem>
+								</MenuList>
+							</Menu>
 						</HStack>
 					</Flex>
 				</Box>
