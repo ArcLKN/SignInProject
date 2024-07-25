@@ -8,18 +8,24 @@ import {
 	Box,
 	Text,
 	HStack,
+	VStack,
 	Avatar,
 	Image,
 } from "@chakra-ui/react";
 import { colors } from "../styleVariables.jsx";
 import { getSelfData } from "../api/UserRoutes.jsx";
 import NavBar from "../components/navBar.jsx";
+import CreateProjectModal from "../components/createProjectModal.jsx";
+import UsersEmptyState from "../components/usersEmptyState.jsx";
 
 export default function Projects() {
 	const [userName, setUserName] = useState({
 		firstName: "Unknown",
 		lastName: "Unknown",
 	});
+	const [doCreateProjectModalIsOpen, setDoCreateProjectModalIsOpen] =
+		useState(false);
+	const [sortedProjects, setSortedProjects] = useState([]);
 
 	useEffect(() => {
 		const getUserName = async () => {
@@ -58,12 +64,41 @@ export default function Projects() {
 	return (
 		<>
 			<title>Projects</title>
+			{doCreateProjectModalIsOpen && (
+				<CreateProjectModal
+					isOpen={doCreateProjectModalIsOpen}
+					doOpen={setDoCreateProjectModalIsOpen}
+				/>
+			)}
 			<Center>
 				<Flex direction={"column"} h='100%' w='100%'>
 					<NavBar />
+					<Box pt='8' pb='8' pr='32' pl='32' w='100%'>
+						<Box>
+							<Flex direction='row' justify='space-between'>
+								<Text fontWeight={"bold"} fontSize={"2xl"}>
+									Projects
+								</Text>
+								<Button
+									colorScheme='teal'
+									onClick={() =>
+										setDoCreateProjectModalIsOpen(true)
+									}
+								>
+									New Project
+								</Button>
+							</Flex>
+						</Box>
+						<Box mt='4'>
+							{Object.keys(sortedProjects).length > 0 ? (
+								<Text>Yes</Text>
+							) : (
+								<UsersEmptyState />
+							)}
+						</Box>
+					</Box>
 				</Flex>
 			</Center>
-			;
 		</>
 	);
 }
