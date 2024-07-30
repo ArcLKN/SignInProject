@@ -9,6 +9,7 @@ import SignUp from "./pages/signUpPage.jsx";
 import UserSettings from "./pages/userSettingsPage.jsx";
 import ConfirmAccount from "./components/confirmAccount.jsx";
 import Projects from "./pages/projectsPage.jsx";
+import Project from "./pages/projectPage.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
 	{
 		path: "/projects",
 		element: <Projects />,
+	},
+	{
+		path: "/projects/:title",
+		element: <Project />,
 	},
 ]);
 
