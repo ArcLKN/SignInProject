@@ -31,7 +31,6 @@ async function addUser(req, res) {
 	const result = validationResult(req);
 	if (result.isEmpty()) {
 		try {
-			const id = req.user._id;
 			let eventData = req.body;
 			eventData["verifiedUser"] = true;
 			console.log("Got a new user:", eventData);
