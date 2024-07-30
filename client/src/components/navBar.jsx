@@ -64,7 +64,7 @@ export default function NavBar() {
 				const response = await getSelfData("socialPicture");
 				if (response.key) {
 					const imageUrl = `http://localhost:3001/images/${response.key}`;
-					console.log("imageUrl", imageUrl, response.key);
+					//console.log("imageUrl", imageUrl, response.key);
 					setUserProfilePicture(imageUrl);
 				}
 			} catch (error) {
