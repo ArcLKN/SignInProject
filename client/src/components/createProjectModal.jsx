@@ -10,13 +10,24 @@ import {
 	ModalHeader,
 	ModalBody,
 	ModalCloseButton,
-	Select,
+	Image,
 	Textarea,
 	Button,
+	Center,
+	IconButton,
+	HStack,
 } from "@chakra-ui/react";
+import {
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	DeleteIcon,
+} from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import { colors } from "../styleVariables.jsx";
 import { useState } from "react";
+import { createNewProject } from "../api/ProjectsRoutes.jsx";
+import { base64ToBlob } from "../utils/canvaUtils.jsx";
+import imageCompression from "browser-image-compression";
 
 export default function CreateProjectModal({ isOpen, doOpen, createProject }) {
 	const {
@@ -31,9 +42,47 @@ export default function CreateProjectModal({ isOpen, doOpen, createProject }) {
 	});
 
 	const [tempProjectFiles, setTempProjectFiles] = useState([]);
-	const [activeImage, setActiveImage] = useState(null);
+	const [activeImage, setActiveImage] = useState(0);
 
 	const tempNewProjectSlider = "";
+
+	async function uploadNewProject(data) {
+		let convertedFiles = [];
+		if (!Array.isArray(tempProjectFiles) || tempProjectFiles.length === 0) {
+			console.log("Need image");
+			return;
+		}
+		const formData = new FormData();
+		for (let i = 0; i < tempProjectFiles.length; i++) {
+			try {
+				const blob = await base64ToBlob(
+					tempProjectFiles[i],
+					"image/jpeg"
+				);
+				const compressedImage = await imageCompression(blob, {
+					maxSizeMB: 2,
+					maxWidthOrHeight: 2048,
+					useWebWorker: true,
+				});
+				const fileName = `projectImage_${i}.jpg`;
+				const file = new File([compressedImage], fileName, {
+					type: "image/jpeg",
+				});
+				convertedFiles.push(file);
+			} catch (error) {
+				console.error(`Error processing file ${i}:`, error);
+			}
+		}
+
+		convertedFiles.forEach((file) => formData.append("files", file));
+		formData.append("title", data.title);
+		formData.append("description", data.description);
+		try {
+			await createNewProject(formData);
+		} catch (error) {
+			console.error("Error creating new project:", error);
+		}
+	}
 
 	function handleFileUpload(data) {
 		const file = data.target.files[0];
@@ -49,6 +98,19 @@ export default function CreateProjectModal({ isOpen, doOpen, createProject }) {
 		}
 	}
 
+	const handleDeleteActiveImage = (index) => {
+		// Remove the file at the specified index
+		const newFiles = tempProjectFiles.filter((_, i) => i !== index);
+		setTempProjectFiles(newFiles);
+
+		// Optionally, update the activeImage index if necessary
+		if (index === activeImage && activeImage > 0) {
+			setActiveImage(activeImage - 1);
+		} else if (index < activeImage) {
+			setActiveImage(activeImage - 1);
+		}
+	};
+
 	return (
 		<Modal isOpen={isOpen} onClose={() => doOpen(false)}>
 			<ModalOverlay />
@@ -59,11 +121,75 @@ export default function CreateProjectModal({ isOpen, doOpen, createProject }) {
 					<form
 						onSubmit={handleSubmit((data) => {
 							doOpen(false);
+							uploadNewProject(data);
 						})}
 					>
 						<Flex direction={"row"}>
-							<Flex direction={"column"}>
+							<Flex direction={"column"} mr='4'>
 								<FormLabel>Project Images</FormLabel>
+								{Array.isArray(tempProjectFiles) &&
+								tempProjectFiles.length > 0 ? (
+									<Box>
+										<Flex
+											direction={"column"}
+											alignItems={"center"}
+										>
+											<Box>
+												<HStack>
+													<Flex align={"center"}>
+														<IconButton
+															w='10px'
+															h='100px'
+															onClick={() =>
+																setActiveImage(
+																	Math.max(
+																		activeImage -
+																			1,
+																		0
+																	)
+																)
+															}
+														>
+															<ChevronLeftIcon />
+														</IconButton>
+														<Image
+															boxSize='100px'
+															objectFit='cover'
+															src={
+																tempProjectFiles[
+																	activeImage
+																]
+															}
+															alt='Profile Picture'
+														/>
+														<IconButton
+															w='10px'
+															h='100px'
+															onClick={() =>
+																setActiveImage(
+																	Math.min(
+																		activeImage +
+																			1,
+																		tempProjectFiles.length -
+																			1
+																	)
+																)
+															}
+														>
+															<ChevronRightIcon />
+														</IconButton>
+													</Flex>
+												</HStack>
+											</Box>
+											<Text>{`${activeImage + 1}/${
+												tempProjectFiles.length
+											}`}</Text>
+										</Flex>
+									</Box>
+								) : (
+									<Text>No picture uploaded</Text> // Fallback UI
+								)}
+
 								<Input
 									hidden
 									type='file'
@@ -71,17 +197,28 @@ export default function CreateProjectModal({ isOpen, doOpen, createProject }) {
 									onChange={(data) => handleFileUpload(data)}
 								/>
 								<Box>
-									<Button
-										onClick={() =>
-											document
-												.querySelector(
-													'input[type="file"]'
+									<HStack>
+										<Button
+											onClick={() =>
+												document
+													.querySelector(
+														'input[type="file"]'
+													)
+													.click()
+											}
+										>
+											Upload
+										</Button>
+										<IconButton
+											onClick={() =>
+												handleDeleteActiveImage(
+													activeImage
 												)
-												.click()
-										}
-									>
-										Upload
-									</Button>
+											}
+										>
+											<DeleteIcon />
+										</IconButton>
+									</HStack>
 								</Box>
 							</Flex>
 							<Flex direction='column'>
