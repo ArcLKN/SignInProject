@@ -27,11 +27,13 @@ const userRoutes = require("./routes/UserRoutes.js");
 const authRoutes = require("./routes/AuthRoutes.js");
 const manageUsersRoutes = require("./routes/ManageUserRoutes.js");
 const emailRoutes = require("./routes/MailRoutes.js");
+const projectRoutes = require("./routes/ProjectRoutes.js");
 
 app.use("/api", userRoutes);
 app.use("/api", authRoutes);
 app.use("/api", manageUsersRoutes);
 app.use("/api", emailRoutes);
+app.use("/api", projectRoutes);
 
 async function run() {
 	try {
