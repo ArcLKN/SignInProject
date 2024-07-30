@@ -55,6 +55,7 @@ export default function Project() {
 				console.log("project", project);
 			} catch (error) {
 				console.error("There was an error fetching project!", error);
+				navigate("/sign-in");
 			}
 		};
 		fetchProjectInformations();
@@ -65,10 +66,16 @@ export default function Project() {
 	const mainflexDirection = useBreakpointValue({ base: "column", md: "row" });
 	const paddingTextBox = useBreakpointValue({ base: "4", md: "10" });
 	const imageWidth = useBreakpointValue({ base: "100%", md: "600px" });
+	const scrollerOverflowX = useBreakpointValue({
+		base: "auto",
+		md: "hidden",
+	});
 
 	const handleThumbnailClick = (i) => {
+		const container = document.querySelector(".bigImageContainer");
 		const width = document.querySelector(".big-image").clientWidth;
-		setImageOffset(i * -width);
+		container.scrollTo({ left: i * width, top: 0, behavior: "smooth" });
+		//setImageOffset(i * -width);
 	};
 
 	return (
@@ -93,7 +100,11 @@ export default function Project() {
 									alignItems={"center"}
 								>
 									<VStack spacing={"3"}>
-										<Box overflowX={"auto"} cursor='auto'>
+										<Box
+											className='bigImageContainer'
+											overflowX={scrollerOverflowX}
+											cursor='auto'
+										>
 											<Flex>
 												{project.images.map(
 													(image, i) => (

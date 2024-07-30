@@ -88,6 +88,7 @@ export default function NavBar() {
 
 	function logout() {
 		localStorage.removeItem("token");
+		navigate("/");
 		window.location.reload();
 	}
 

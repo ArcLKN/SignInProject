@@ -64,12 +64,14 @@ export default function Projects() {
 		const fetchUserProjects = async () => {
 			try {
 				const projects = await getUserProjects();
-				setUserProjects(projects.data);
+				if (projects.data) setUserProjects(projects.data);
+				else navigate("/sign-in");
 			} catch (error) {
 				console.error(
 					"There was an error fetching user projects!",
 					error
 				);
+				navigate("/sign-in");
 			}
 		};
 
