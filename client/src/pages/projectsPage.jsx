@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import { Link as ChakraLink } from "@chakra-ui/react";
 import {
 	Button,
@@ -11,20 +11,24 @@ import {
 	VStack,
 	Avatar,
 	Image,
+	SimpleGrid,
+	useBreakpointValue,
 } from "@chakra-ui/react";
 import { colors } from "../styleVariables.jsx";
-import { getSelfData } from "../api/UserRoutes.jsx";
+import { getUserProjects } from "../api/ProjectsRoutes.jsx";
 import NavBar from "../components/navBar.jsx";
 import CreateProjectModal from "../components/createProjectModal.jsx";
 import UsersEmptyState from "../components/usersEmptyState.jsx";
 
 export default function Projects() {
+	const navigate = useNavigate();
 	const [userName, setUserName] = useState({
 		firstName: "Unknown",
 		lastName: "Unknown",
 	});
 	const [doCreateProjectModalIsOpen, setDoCreateProjectModalIsOpen] =
 		useState(false);
+	const [userProjects, setUserProjects] = useState([]);
 	const [sortedProjects, setSortedProjects] = useState([]);
 
 	useEffect(() => {
@@ -57,9 +61,28 @@ export default function Projects() {
 				console.error("There was an error!", error);
 			}
 		};
+		const fetchUserProjects = async () => {
+			try {
+				const projects = await getUserProjects();
+				setUserProjects(projects.data);
+			} catch (error) {
+				console.error(
+					"There was an error fetching user projects!",
+					error
+				);
+			}
+		};
 
+		fetchUserProjects();
 		getUserName();
 	}, []);
+
+	const projectsMap = userProjects.map((project) => {
+		<Text>{project.title}</Text>;
+	});
+
+	const paddingXValue = useBreakpointValue({ base: "2", md: "32" });
+	const paddingYValue = useBreakpointValue({ base: "2", md: "8" });
 
 	return (
 		<>
@@ -73,7 +96,13 @@ export default function Projects() {
 			<Center>
 				<Flex direction={"column"} h='100%' w='100%'>
 					<NavBar />
-					<Box pt='8' pb='8' pr='32' pl='32' w='100%'>
+					<Box
+						pt={paddingYValue}
+						pb={paddingYValue}
+						pr={paddingXValue}
+						pl={paddingXValue}
+						w='100%'
+					>
 						<Box>
 							<Flex direction='row' justify='space-between'>
 								<Text fontWeight={"bold"} fontSize={"2xl"}>
@@ -90,11 +119,62 @@ export default function Projects() {
 							</Flex>
 						</Box>
 						<Box mt='4'>
-							{Object.keys(sortedProjects).length > 0 ? (
-								<Text>Yes</Text>
-							) : (
-								<UsersEmptyState />
-							)}
+							<Flex justify='center'>
+								<HStack spacing='24px'>
+									{Object.keys(userProjects).length > 0 ? (
+										<SimpleGrid
+											columns={{
+												base: 1,
+												sm: 2,
+												md: 3,
+												lg: 4,
+											}}
+											spacing={10}
+										>
+											{userProjects.map((project) => (
+												<Box
+													key={project._id}
+													border='1px solid'
+													borderColor={colors.vligrey}
+													rounded='5px'
+													w='300px'
+													h='210px'
+													p='3'
+													_hover={{
+														boxShadow: "lg",
+													}}
+													onClick={() =>
+														navigate(
+															`/projects/${project.title}-${project._id}`
+														)
+													}
+												>
+													<Flex
+														alignItems='center'
+														justify='center'
+													>
+														<Image
+															src={`http://localhost:3001/images/${project.images[0]}`}
+															rounded='5px'
+															boxSize='170px'
+															w='300px'
+															objectFit='cover'
+														/>
+													</Flex>
+													<Text
+														fontWeight='bold'
+														noOfLines={1}
+													>
+														{project.title}
+													</Text>
+												</Box>
+											))}
+										</SimpleGrid>
+									) : (
+										<UsersEmptyState />
+									)}
+								</HStack>
+							</Flex>
 						</Box>
 					</Box>
 				</Flex>
