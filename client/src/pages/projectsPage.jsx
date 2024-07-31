@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link as ReactRouterLink } from "react-router-dom";
-import { Link as ChakraLink } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import {
 	Button,
 	Center,
@@ -8,8 +7,6 @@ import {
 	Box,
 	Text,
 	HStack,
-	VStack,
-	Avatar,
 	Image,
 	SimpleGrid,
 	useBreakpointValue,

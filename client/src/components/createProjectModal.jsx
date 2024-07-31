@@ -13,7 +13,6 @@ import {
 	Image,
 	Textarea,
 	Button,
-	Center,
 	IconButton,
 	HStack,
 } from "@chakra-ui/react";
