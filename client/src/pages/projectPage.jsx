@@ -18,6 +18,7 @@ import {
 	Checkbox,
 	Input,
 	useBreakpointValue,
+	SimpleGrid,
 } from "@chakra-ui/react";
 import { colors } from "../styleVariables.jsx";
 import { getProjectFromId } from "../api/ProjectsRoutes.jsx";
@@ -104,6 +105,7 @@ export default function Project() {
 											className='bigImageContainer'
 											overflowX={scrollerOverflowX}
 											cursor='auto'
+											w={imageWidth}
 										>
 											<Flex>
 												{project.images.map(
@@ -111,14 +113,18 @@ export default function Project() {
 														<Image
 															key={"big_" + i}
 															className='big-image'
-															boxSize='437px'
+															boxSize={imageWidth}
 															w={imageWidth}
+															h='437px'
+															objectFit='cover'
+															aspectRatio={
+																600 / 437
+															}
 															left={
 																imageOffset +
 																"px"
 															}
 															pos={"relative"}
-															objectFit='cover'
 															src={`http://localhost:3001/images/${image}`}
 															onClick={() =>
 																setActualImage(
@@ -133,7 +139,15 @@ export default function Project() {
 											</Flex>
 										</Box>
 										<Flex direction={"row"}>
-											<HStack spacing={"1"}>
+											<SimpleGrid
+												columns={{
+													base: 4,
+													sm: 4,
+													md: 9,
+													lg: 9,
+												}}
+												spacing={1}
+											>
 												{project.images.map(
 													(image, i) => (
 														<Image
@@ -151,7 +165,7 @@ export default function Project() {
 														/>
 													)
 												)}
-											</HStack>
+											</SimpleGrid>
 										</Flex>
 									</VStack>
 								</Flex>
