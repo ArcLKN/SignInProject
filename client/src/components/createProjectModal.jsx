@@ -29,7 +29,11 @@ import { createNewProject } from "../api/ProjectsRoutes.jsx";
 import { base64ToBlob } from "../utils/canvaUtils.jsx";
 import imageCompression from "browser-image-compression";
 
-export default function CreateProjectModal({ isOpen, doOpen, createProject }) {
+export default function CreateProjectModal({
+	isOpen,
+	doOpen,
+	setUserProjects,
+}) {
 	const {
 		register,
 		handleSubmit,
@@ -78,7 +82,20 @@ export default function CreateProjectModal({ isOpen, doOpen, createProject }) {
 		formData.append("title", data.title);
 		formData.append("description", data.description);
 		try {
-			await createNewProject(formData);
+			const response = await createNewProject(formData);
+			if (response && response.data && response.data.path) {
+				//consst newUserProjects = ...prev
+				setUserProjects((prev) => {
+					const newUserProjects = [...prev];
+					newUserProjects.push({
+						title: data.title,
+						description: data.description,
+						owner: "Unknown",
+						images: [response.data.path],
+					});
+					return newUserProjects;
+				});
+			}
 		} catch (error) {
 			console.error("Error creating new project:", error);
 		}

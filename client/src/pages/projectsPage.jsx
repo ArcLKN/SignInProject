@@ -29,7 +29,7 @@ export default function Projects() {
 	const [doCreateProjectModalIsOpen, setDoCreateProjectModalIsOpen] =
 		useState(false);
 	const [userProjects, setUserProjects] = useState([]);
-	const [sortedProjects, setSortedProjects] = useState([]);
+	//const [sortedProjects, setSortedProjects] = useState([]);
 
 	useEffect(() => {
 		const getUserName = async () => {
@@ -93,6 +93,7 @@ export default function Projects() {
 				<CreateProjectModal
 					isOpen={doCreateProjectModalIsOpen}
 					doOpen={setDoCreateProjectModalIsOpen}
+					setUserProjects={setUserProjects}
 				/>
 			)}
 			<Center>
