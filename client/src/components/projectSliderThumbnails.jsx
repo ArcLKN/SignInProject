@@ -1,11 +1,12 @@
 import { Flex, Box, Image, SimpleGrid } from "@chakra-ui/react";
+import { useCallback } from "react";
 
 export default function ProjectSliderThumbnails({ project }) {
-	const handleThumbnailClick = (i) => {
+	const handleThumbnailClick = useCallback((i) => {
 		const container = document.querySelector(".bigImageContainer");
 		const width = document.querySelector(".big-image").clientWidth;
 		container.scrollTo({ left: i * width, top: 0, behavior: "smooth" });
-	};
+	}, []);
 
 	return (
 		<Box>
