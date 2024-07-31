@@ -66,6 +66,7 @@ export default function Projects() {
 				const projects = await getUserProjects();
 				if (projects.data) setUserProjects(projects.data);
 				else navigate("/sign-in");
+				console.log(projects.data);
 			} catch (error) {
 				console.error(
 					"There was an error fetching user projects!",

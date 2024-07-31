@@ -24,10 +24,10 @@ async function addNewProject(req, res) {
 			images: projectImages,
 		};
 		console.log("New project", newProject);
-		await ProjectModel.create(newProject);
+		const newlyCreatedProject = await ProjectModel.create(newProject);
 		res.status(200).json({
 			msg: "Success",
-			data: { path: projectImages[0] },
+			data: { path: projectImages[0], id: newlyCreatedProject._id },
 		});
 	} catch (error) {
 		console.error("Error creating project:", error);

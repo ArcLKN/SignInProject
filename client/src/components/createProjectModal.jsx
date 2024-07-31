@@ -83,7 +83,12 @@ export default function CreateProjectModal({
 		formData.append("description", data.description);
 		try {
 			const response = await createNewProject(formData);
-			if (response && response.data && response.data.path) {
+			if (
+				response &&
+				response.data &&
+				response.data.path &&
+				response.data.id
+			) {
 				//consst newUserProjects = ...prev
 				setUserProjects((prev) => {
 					const newUserProjects = [...prev];
@@ -92,6 +97,7 @@ export default function CreateProjectModal({
 						description: data.description,
 						owner: "Unknown",
 						images: [response.data.path],
+						_id: response.data.id,
 					});
 					return newUserProjects;
 				});
