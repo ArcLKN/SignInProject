@@ -1,8 +1,10 @@
 import { Flex, Box, Text, HStack, Image, SimpleGrid } from "@chakra-ui/react";
 import { colors } from "../styleVariables.jsx";
 import UsersEmptyState from "../components/usersEmptyState.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function ProjectsMainGrid({ userProjects }) {
+	const navigate = useNavigate();
 	return (
 		<HStack spacing='24px'>
 			{Object.keys(userProjects).length > 0 ? (
