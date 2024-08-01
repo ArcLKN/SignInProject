@@ -50,10 +50,23 @@ export default function Project() {
 		fetchProjectInformations();
 	}, [projectId, navigate]);
 
-	const paddingXValue = useBreakpointValue({ base: "0", md: "48" });
-	const paddingYValue = useBreakpointValue({ base: "0", md: "16" });
-	const mainflexDirection = useBreakpointValue({ base: "column", md: "row" });
-	const paddingTextBox = useBreakpointValue({ base: "4", md: "10" });
+	// Modify style depending on device's size
+	const paddingXValue = useBreakpointValue(
+		{ base: "0", md: "48" },
+		{ fallback: md }
+	);
+	const paddingYValue = useBreakpointValue(
+		{ base: "0", md: "16" },
+		{ fallback: md }
+	);
+	const mainflexDirection = useBreakpointValue(
+		{ base: "column", md: "row" },
+		{ fallback: md }
+	);
+	const paddingTextBox = useBreakpointValue(
+		{ base: "4", md: "10" },
+		{ fallback: md }
+	);
 
 	return (
 		<>
