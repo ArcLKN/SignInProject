@@ -1,9 +1,6 @@
 // /server/controllers/userController.js
 const ProjectModel = require("../models/ProjectModel");
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose");
-const path = require("path");
 
 async function addNewProject(req, res) {
 	const result = validationResult(req);
@@ -12,7 +9,7 @@ async function addNewProject(req, res) {
 	}
 	try {
 		const projectImages = [];
-		if (req.body.defaultImage) {
+		if (req.body.defaultImage === true) {
 			projectImages.push("c30a776aab0475029e8c3cc1dde3583e");
 		} else {
 			const files = req.files;
