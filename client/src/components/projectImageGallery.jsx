@@ -2,10 +2,13 @@ import { Flex, Box, Image, useBreakpointValue } from "@chakra-ui/react";
 
 export default function ProjectImageGallery({ project }) {
 	const imageWidth = useBreakpointValue({ base: "100%", md: "600px" });
-	const scrollerOverflowX = useBreakpointValue({
-		base: "auto",
-		md: "hidden",
-	});
+	const scrollerOverflowX = useBreakpointValue(
+		{
+			base: "auto",
+			md: "hidden",
+		},
+		{ fallback: "md" }
+	);
 
 	return (
 		<Box
