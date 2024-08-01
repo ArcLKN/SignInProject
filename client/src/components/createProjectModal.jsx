@@ -51,9 +51,9 @@ export default function CreateProjectModal({
 
 	async function uploadNewProject(data) {
 		let convertedFiles = [];
+		let defaultImage = false;
 		if (!Array.isArray(tempProjectFiles) || tempProjectFiles.length === 0) {
-			console.log("Need image");
-			return;
+			defaultImage = true;
 		}
 		const formData = new FormData();
 		for (let i = 0; i < tempProjectFiles.length; i++) {
@@ -80,6 +80,7 @@ export default function CreateProjectModal({
 		convertedFiles.forEach((file) => formData.append("files", file));
 		formData.append("title", data.title);
 		formData.append("description", data.description);
+		formData.append("defaultImage", defaultImage);
 		try {
 			const response = await createNewProject(formData);
 			if (

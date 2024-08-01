@@ -12,11 +12,16 @@ async function addNewProject(req, res) {
 	}
 	try {
 		const projectImages = [];
-		const files = req.files;
-		for (let file in files) {
-			const filePath = files[file].filename;
-			projectImages.push(filePath);
+		if (req.body.defaultImage) {
+			projectImages.push("c30a776aab0475029e8c3cc1dde3583e");
+		} else {
+			const files = req.files;
+			for (let file in files) {
+				const filePath = files[file].filename;
+				projectImages.push(filePath);
+			}
 		}
+
 		const newProject = {
 			owner: req.user._id,
 			title: req.body.title,
