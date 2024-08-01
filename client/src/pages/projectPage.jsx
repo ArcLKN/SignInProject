@@ -11,7 +11,7 @@ import {
 import { getProjectFromId } from "../api/ProjectsRoutes.jsx";
 import NavBar from "../components/navBar.jsx";
 import ProjectImageGallery from "../components/projectImageGallery.jsx";
-import ProjectSliderThumbnails from "../components/projectSliderThumbnails.jsx";
+import ProjectThumbnailsSliderBox from "../components/projectThumbnailsSliderBox.jsx";
 import ProjectInformations from "../components/projectInformations.jsx";
 
 export default function Project() {
@@ -94,11 +94,13 @@ export default function Project() {
 										<ProjectImageGallery
 											project={project}
 										/>
-										<ProjectSliderThumbnails
-											project={project}
-											index={sliderIndex}
-											setIndex={setSliderIndex}
-										/>
+										{project.images.length > 1 && (
+											<ProjectThumbnailsSliderBox
+												project={project}
+												index={sliderIndex}
+												setIndex={setSliderIndex}
+											/>
+										)}
 									</VStack>
 								</Flex>
 							)}
