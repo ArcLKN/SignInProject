@@ -218,6 +218,7 @@ export default function CreateProjectModal({
 									accept='image/*'
 									onChange={(data) => handleFileUpload(data)}
 								/>
+
 								<Box>
 									<HStack>
 										<Button
@@ -231,6 +232,7 @@ export default function CreateProjectModal({
 										>
 											Upload
 										</Button>
+
 										<IconButton
 											onClick={() =>
 												handleDeleteActiveImage(
@@ -241,6 +243,9 @@ export default function CreateProjectModal({
 											<DeleteIcon />
 										</IconButton>
 									</HStack>
+									<Text color={colors.redError}>
+										{errors.files?.message}
+									</Text>
 								</Box>
 							</Flex>
 							<Flex direction='column'>
@@ -256,6 +261,9 @@ export default function CreateProjectModal({
 									})}
 									placeholder='Project title'
 								/>
+								<Text color={colors.redError}>
+									{errors.title?.message}
+								</Text>
 								<FormLabel>Project description</FormLabel>
 								<Textarea
 									height={"10em"}
@@ -271,6 +279,9 @@ export default function CreateProjectModal({
 									})}
 									placeholder='Project description...'
 								/>
+								<Text color={colors.redError}>
+									{errors.description?.message}
+								</Text>
 								<Input
 									mt='5'
 									bgColor='teal.300'
