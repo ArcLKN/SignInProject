@@ -17,6 +17,7 @@ import ProjectInformations from "../components/projectInformations.jsx";
 export default function Project() {
 	const navigate = useNavigate();
 	const { title } = useParams();
+	const [sliderIndex, setSliderIndex] = useState(0);
 
 	function extractIdFromTitle(title) {
 		const parts = title.split("-");
@@ -95,6 +96,8 @@ export default function Project() {
 										/>
 										<ProjectSliderThumbnails
 											project={project}
+											index={sliderIndex}
+											setIndex={setSliderIndex}
 										/>
 									</VStack>
 								</Flex>
