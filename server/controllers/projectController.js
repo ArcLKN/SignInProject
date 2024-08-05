@@ -134,10 +134,36 @@ async function isProjectOwner(req, res) {
 	}
 }
 
+async function deleteProject(req, res) {
+	const result = validationResult(req);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ errors: result.array() });
+	}
+	try {
+		const projectId = req.params.id;
+		const user = req.user;
+		const project = await ProjectModel.findById({ _id: projectId }).select(
+			"owner"
+		);
+		if (!user._id === project.owner) {
+			return res.status(200).json({ error: "Unauthorized access." });
+		}
+		await ProjectModel.deleteOne({ _id: projectId });
+		res.status(200).json({
+			msg: "Success",
+			data: { _id: projectId },
+		});
+	} catch (error) {
+		console.error("Error fetching project:", error);
+		return res.status(500).json({ error: "Error fetching project" });
+	}
+}
+
 module.exports = {
 	addNewProject,
 	getUserProjects,
 	getProject,
 	updateProject,
 	isProjectOwner,
+	deleteProject,
 };
