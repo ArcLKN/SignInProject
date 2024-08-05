@@ -1,28 +1,28 @@
 import React from "react";
 import { Image } from "@chakra-ui/react";
 import { useDrag, useDrop } from "react-dnd";
-export default function DraggableThumbnail({ i, image, changeImageOrder }) {
+export default function DraggableThumbnail({ index, image, changeImageOrder }) {
 	const ItemTypes = {
 		KNIGHT: "knight",
 	};
 
 	const [{ isDragging }, drag] = useDrag(() => ({
 		type: ItemTypes.KNIGHT,
-		item: { index: i, image },
+		item: { index, image },
 		collect: (monitor) => ({
 			isDragging: !!monitor.isDragging(),
 		}),
 	}));
 
-	const handleDroppedImage = (hovered) => {
-		console.log("Selected item image:", hovered.image);
-		console.log("Drop target image:", image);
+	const handleDroppedImage = (image, hovered) => {
+		//console.log("Selected item image:", hovered.image);
+		//console.log("Drop target image:", image);
 		changeImageOrder(image, hovered.image);
 	};
 
 	const [{ isOver }, drop] = useDrop(() => ({
 		accept: ItemTypes.KNIGHT,
-		drop: (hovered) => handleDroppedImage(hovered),
+		drop: (hovered) => handleDroppedImage(image, hovered),
 		collect: (monitor) => ({
 			isOver: !!monitor.isOver(),
 		}),
@@ -50,7 +50,7 @@ export default function DraggableThumbnail({ i, image, changeImageOrder }) {
 					boxSize='62px'
 					objectFit='cover'
 					src={`http://localhost:3001/images/${image}`}
-					alt={`Thumbnail ${i}`}
+					alt={`Thumbnail ${index}`}
 					cursor='pointer'
 					backgroundColor='red'
 					style={{
