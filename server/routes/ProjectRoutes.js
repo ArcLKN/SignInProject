@@ -8,9 +8,11 @@ const {
 	addNewProject,
 	getUserProjects,
 	getProject,
+	updateProject,
+	isProjectOwner,
 } = require("../controllers/projectController");
 
-router.put(
+router.post(
 	"/projects",
 	authenticateToken,
 	upload.array("files"),
@@ -18,5 +20,7 @@ router.put(
 );
 router.get("/projects", authenticateToken, getUserProjects);
 router.get("/projects/:id", authenticateToken, getProject);
+router.get("/project/check-owner/:id", authenticateToken, isProjectOwner);
+router.put("/projects/:id", authenticateToken, updateProject);
 
 module.exports = router;

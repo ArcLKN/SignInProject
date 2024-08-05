@@ -73,8 +73,56 @@ async function getProject(req, res) {
 	}
 }
 
+async function updateProject(req, res) {
+	const result = validationResult(req);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ errors: result.array() });
+	}
+	try {
+		const projectId = req.params.id;
+		const eventData = req.body;
+		await ProjectModel.updateOne({ _id: projectId }, eventData);
+		res.status(200).json({
+			msg: "Success",
+		});
+	} catch (error) {
+		console.error("Error fetching project:", error);
+		return res.status(500).json({ error: "Error fetching project" });
+	}
+}
+
+async function isProjectOwner(req, res) {
+	const result = validationResult(req);
+	if (!result.isEmpty()) {
+		return res.status(400).json({ errors: result.array() });
+	}
+	try {
+		const projectId = req.params.id;
+		const user = req.user;
+		const project = await ProjectModel.findById({ _id: projectId }).select(
+			"owner"
+		);
+		if (user._id === project.owner) {
+			res.status(200).json({
+				msg: "Success",
+				data: true,
+			});
+		} else {
+			res.status(200).json({
+				msg: "Failure",
+				data: false,
+			});
+		}
+	} catch (error) {
+		console.error("Error fetching project:", error);
+		return res.status(500).json({ error: "Error fetching project" });
+	}
+}
+
 module.exports = {
 	addNewProject,
 	getUserProjects,
 	getProject,
+	updateProject,
+	isProjectOwner,
 };
