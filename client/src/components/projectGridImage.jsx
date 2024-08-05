@@ -2,9 +2,7 @@ import {
 	Flex,
 	Box,
 	Text,
-	HStack,
 	Image,
-	SimpleGrid,
 	IconButton,
 	useDisclosure,
 } from "@chakra-ui/react";
