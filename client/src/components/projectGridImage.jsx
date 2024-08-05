@@ -54,6 +54,7 @@ export default function ProjectGridImage({ project, deleteProject }) {
 				right={"20px"}
 				onClick={onOpen}
 				icon={<DeleteIcon />}
+				color='red'
 			/>
 			<DeleteProjectAlert
 				isOpen={isOpen}
