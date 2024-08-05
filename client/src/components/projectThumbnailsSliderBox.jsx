@@ -1,4 +1,10 @@
-import { Flex, Box, useBreakpointValue, IconButton } from "@chakra-ui/react";
+import {
+	Flex,
+	Box,
+	useBreakpointValue,
+	IconButton,
+	Center,
+} from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import ProjectSliderThumbnails from "../components/projectSliderThumbnails.jsx";
 
@@ -9,6 +15,16 @@ export default function ProjectThumbnailsSliderBox({
 }) {
 	const isMobile = useBreakpointValue(
 		{ base: true, md: false },
+		{ fallback: "md" }
+	);
+
+	const numberOfThumbnails = useBreakpointValue(
+		{ base: 5, md: 9 },
+		{ fallback: "md" }
+	);
+
+	const thumbnailsSliderWidth = useBreakpointValue(
+		{ base: "70%", md: "100%" },
 		{ fallback: "md" }
 	);
 
@@ -43,32 +59,35 @@ export default function ProjectThumbnailsSliderBox({
 		<Box>
 			<Flex direction='row' align={"center"}>
 				<Box h='62px' w='40px'>
-					{index > 0 && project.images.length > 9 && (
-						<IconButton
-							p='0'
-							m='0'
-							icon={<ChevronLeftIcon />}
-							h='100%'
-							w='100%'
-							onClick={() => handleChevronClick(-1)}
+					{index > 0 &&
+						project.images.length > numberOfThumbnails && (
+							<IconButton
+								p='0'
+								m='0'
+								icon={<ChevronLeftIcon />}
+								h='100%'
+								w='100%'
+								onClick={() => handleChevronClick(-1)}
+							/>
+						)}
+				</Box>
+				<Center>
+					<Box
+						className='thumbImageContainer'
+						width={thumbnailsSliderWidth}
+						overflowX={scrollerOverflowX}
+					>
+						<ProjectSliderThumbnails
+							project={project}
+							index={index}
+							setIndex={setIndex}
+							isMobile={isMobile}
 						/>
-					)}
-				</Box>
-				<Box
-					className='thumbImageContainer'
-					width='100%'
-					overflowX={scrollerOverflowX}
-				>
-					<ProjectSliderThumbnails
-						project={project}
-						index={index}
-						setIndex={setIndex}
-						isMobile={isMobile}
-					/>
-				</Box>
+					</Box>
+				</Center>
 				<Box h='62px' w='40px'>
 					{index < project.images.length - 1 &&
-						project.images.length > 9 && (
+						project.images.length > numberOfThumbnails && (
 							<IconButton
 								p='0'
 								m='0'

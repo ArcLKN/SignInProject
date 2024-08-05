@@ -99,7 +99,7 @@ export default function Project() {
 	}, [project.images, projectId]);
 
 	async function changeImageOrder(toBeReplacedImage, toReplaceImage) {
-		console.log("Initial project.images:", project.images);
+		//console.log("Initial project.images:", project.images);
 		const index1 = project.images.findIndex(
 			(item) => item === toBeReplacedImage
 		);
@@ -108,7 +108,7 @@ export default function Project() {
 		);
 		const newImageList = [...project.images];
 
-		console.log("old list", newImageList);
+		//console.log("old list", newImageList);
 
 		if (index1 !== -1 && index2 !== -1) {
 			[newImageList[index1], newImageList[index2]] = [
@@ -117,13 +117,14 @@ export default function Project() {
 			];
 		}
 
+		/*
 		console.log(
 			"IMAGES",
 			toBeReplacedImage,
 			index1,
 			toReplaceImage,
 			index2
-		);
+		);*/
 
 		const response = await updateProjectFromId(projectId, {
 			images: newImageList,
@@ -131,12 +132,12 @@ export default function Project() {
 
 		if (response.error) {
 			console.error("Error updating project:", response.error);
-			return;
+			return newImageList;
 		}
 
 		const updatedProject = { ...project, images: newImageList };
 		setProject(updatedProject);
-		console.log("Updated project:", updatedProject);
+		//console.log("Updated project:", updatedProject);
 		setEditThumbnailsSlider(false);
 		return newImageList;
 	}
@@ -159,6 +160,11 @@ export default function Project() {
 		};
 		fetchProjectInformations();
 	}, [projectId, navigate]);
+
+	const isMobile = useBreakpointValue(
+		{ base: true, md: false },
+		{ fallback: "md" }
+	);
 
 	// Modify style depending on device's size
 	const paddingXValue = useBreakpointValue(
@@ -224,7 +230,7 @@ export default function Project() {
 												/>
 											))}
 									</VStack>
-									{(isOwner || isAdmin) && (
+									{(isOwner || isAdmin) && !isMobile && (
 										<Button
 											onClick={() =>
 												setEditThumbnailsSlider(

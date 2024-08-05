@@ -34,6 +34,8 @@ export default function ProjectSliderThumbnails({
 								border={index === i ? "solid 3px teal" : "none"}
 								key={"thumb_" + i}
 								boxSize='62px'
+								width={"62px"}
+								aspectRatio={1 / 1}
 								objectFit='cover'
 								src={`http://localhost:3001/images/${image}`}
 								onClick={() => handleThumbnailClick(i)}
