@@ -1,5 +1,6 @@
 // /server/controllers/userController.js
 const ProjectModel = require("../models/ProjectModel");
+const UserModel = require("../models/User.js");
 const { validationResult } = require("express-validator");
 
 async function addNewProject(req, res) {
@@ -81,6 +82,20 @@ async function updateProject(req, res) {
 	try {
 		const projectId = req.params.id;
 		const eventData = req.body;
+		const user = req.user;
+		const dbUserData = await UserModel.findById({ _id: user._id }).select(
+			"userType"
+		);
+		let isAdmin = false;
+		if (["Admin", "Super Admin"].includes(dbUserData.userType)) {
+			isAdmin = true;
+		}
+		const project = await ProjectModel.findById({ _id: projectId }).select(
+			"owner"
+		);
+		if (user._id !== project.owner && !isAdmin) {
+			return res.status(404).json({ error: "Unauthorized access." });
+		}
 		await ProjectModel.updateOne({ _id: projectId }, eventData);
 		res.status(200).json({
 			msg: "Success",
