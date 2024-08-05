@@ -5,22 +5,19 @@ import DraggableThumbnail from "./projecDraggableThumbnail";
 import { Flex, HStack } from "@chakra-ui/react";
 
 export default function ProjectThumbnailsBoard({ project, changeImageOrder }) {
-	console.log("Component props:", project);
+	//console.log("Component props:", project);
 	return (
 		<DndProvider backend={HTML5Backend}>
 			<Flex direction={"row"}>
 				<HStack spacing='3px'>
-					{project.images.map((image, i) => {
-						//console.log(`Rendering image ${i}:`, image);
-						return (
-							<DraggableThumbnail
-								key={"draggableThumbnail_" + i}
-								image={image}
-								i={i}
-								changeImageOrder={changeImageOrder}
-							/>
-						);
-					})}
+					{project.images.map((image, i) => (
+						<DraggableThumbnail
+							key={image}
+							image={image}
+							index={i}
+							changeImageOrder={changeImageOrder}
+						/>
+					))}
 				</HStack>
 			</Flex>
 		</DndProvider>
