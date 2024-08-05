@@ -7,8 +7,12 @@ import {
 	Box,
 	Text,
 	useBreakpointValue,
+	useDisclosure,
 } from "@chakra-ui/react";
-import { getUserProjects } from "../api/ProjectsRoutes.jsx";
+import {
+	getUserProjects,
+	deleteProjectFromId,
+} from "../api/ProjectsRoutes.jsx";
 import NavBar from "../components/navBar.jsx";
 import CreateProjectModal from "../components/createProjectModal.jsx";
 import ProjectsMainGrid from "../components/projectsMainGrid.jsx";
@@ -18,6 +22,7 @@ export default function Projects() {
 	const [doCreateProjectModalIsOpen, setDoCreateProjectModalIsOpen] =
 		useState(false);
 	const [userProjects, setUserProjects] = useState([]);
+
 	//const [sortedProjects, setSortedProjects] = useState([]);
 
 	useEffect(() => {
@@ -26,7 +31,7 @@ export default function Projects() {
 				const projects = await getUserProjects();
 				if (projects.data) setUserProjects(projects.data);
 				else navigate("/sign-in");
-				//console.log(projects.data);
+				console.log(projects.data);
 			} catch (error) {
 				console.error(
 					"There was an error fetching user projects!",
@@ -38,6 +43,18 @@ export default function Projects() {
 
 		fetchUserProjects();
 	}, []);
+
+	async function deleteProject(projectId) {
+		console.log("SHOULD BE DELETING", projectId);
+		const response = await deleteProjectFromId(projectId);
+		if (response.msg) {
+			console.log(response);
+			const newProjects = userProjects.filter(
+				(project) => project._id !== projectId
+			);
+			setUserProjects(newProjects);
+		}
+	}
 
 	const paddingXValue = useBreakpointValue({ base: "2", md: "32" });
 	const paddingYValue = useBreakpointValue({ base: "2", md: "8" });
@@ -79,7 +96,10 @@ export default function Projects() {
 						</Box>
 						<Box mt='4'>
 							<Flex justify='center'>
-								<ProjectsMainGrid userProjects={userProjects} />
+								<ProjectsMainGrid
+									userProjects={userProjects}
+									deleteProject={deleteProject}
+								/>
 							</Flex>
 						</Box>
 					</Box>

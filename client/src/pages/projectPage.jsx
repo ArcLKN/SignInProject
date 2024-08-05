@@ -7,8 +7,9 @@ import {
 	VStack,
 	useBreakpointValue,
 	Button,
+	Text,
 } from "@chakra-ui/react";
-
+import { TiEdit } from "react-icons/ti";
 import {
 	getProjectFromId,
 	updateProjectFromId,
@@ -41,7 +42,7 @@ export default function Project() {
 	});
 
 	useEffect(() => {
-		console.log("project.images has changed:", project.images);
+		//console.log("project.images has changed:", project.images);
 		const checkAdmin = async () => {
 			const token = localStorage.getItem("token");
 			if (!token) {
@@ -106,40 +107,32 @@ export default function Project() {
 		const index2 = project.images.findIndex(
 			(item) => item === toReplaceImage
 		);
-		const newImageList = [...project.images];
 
-		//console.log("old list", newImageList);
+		const updatedImages = [...project.images];
+		updatedImages.splice(index2, 1);
+		updatedImages.splice(index1, 0, toReplaceImage);
 
-		if (index1 !== -1 && index2 !== -1) {
-			[newImageList[index1], newImageList[index2]] = [
-				newImageList[index2],
-				newImageList[index1],
-			];
-		}
-
-		/*
-		console.log(
-			"IMAGES",
-			toBeReplacedImage,
-			index1,
-			toReplaceImage,
-			index2
-		);*/
+		console.log({
+			projectImages: project.images,
+			copyProjectImages: updatedImages,
+		});
 
 		const response = await updateProjectFromId(projectId, {
-			images: newImageList,
+			images: updatedImages,
 		});
 
 		if (response.error) {
 			console.error("Error updating project:", response.error);
-			return newImageList;
+			return updatedImages;
 		}
 
-		const updatedProject = { ...project, images: newImageList };
-		setProject(updatedProject);
+		setProject((prevProject) => ({
+			...prevProject,
+			images: updatedImages,
+		}));
 		//console.log("Updated project:", updatedProject);
 		setEditThumbnailsSlider(false);
-		return newImageList;
+		return updatedImages;
 	}
 
 	useEffect(() => {
@@ -206,21 +199,47 @@ export default function Project() {
 									alignItems={"center"}
 								>
 									<VStack spacing={"3"}>
-										<ProjectImageGallery
-											project={project}
-										/>
+										<Box position={"relative"}>
+											<ProjectImageGallery
+												project={project}
+											/>
+											{(isOwner || isAdmin) &&
+												!isMobile && (
+													<Button
+														p='0'
+														m='0'
+														position='absolute'
+														right={"-20px"}
+														bottom={"-20px"}
+														onClick={() =>
+															setEditThumbnailsSlider(
+																!editThumbnailsSlider
+															)
+														}
+													>
+														<TiEdit />
+													</Button>
+												)}
+										</Box>
 										{project.images.length > 1 &&
 											(editThumbnailsSlider ? (
-												<Box
-													border='2px solid red'
-													rounded={"5px"}
-												>
-													<ProjectThumbnailsBoard
-														project={project}
-														changeImageOrder={
-															changeImageOrder
-														}
-													/>
+												<Box>
+													<Box
+														border='2px solid red'
+														rounded={"5px"}
+													>
+														<ProjectThumbnailsBoard
+															project={project}
+															changeImageOrder={
+																changeImageOrder
+															}
+														/>
+													</Box>
+													<Text>
+														Drag and Drop an image
+														on top of another image
+														to change its place.
+													</Text>
 												</Box>
 											) : (
 												<ProjectThumbnailsSliderBox
@@ -230,17 +249,6 @@ export default function Project() {
 												/>
 											))}
 									</VStack>
-									{(isOwner || isAdmin) && !isMobile && (
-										<Button
-											onClick={() =>
-												setEditThumbnailsSlider(
-													!editThumbnailsSlider
-												)
-											}
-										>
-											Edit order
-										</Button>
-									)}
 								</Flex>
 							)}
 							<Box maxW={"500px"} p={paddingTextBox}>
