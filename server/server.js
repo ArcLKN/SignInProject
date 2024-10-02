@@ -7,8 +7,7 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const uri =
-	"mongodb+srv://raphaelg0:r7S9oB9z6nndHNoB@cluster0.objvoj1.mongodb.net/backoffice?retryWrites=true&w=majority";
+const uri = null;
 const clientOptions = {
 	serverApi: { version: "1", strict: true, deprecationErrors: true },
 };
